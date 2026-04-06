@@ -3,68 +3,41 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>VISHU AI v25.0 - COMPLETE</title>
+    <title>VISHU AI v26.0 - 3-POINT ANALYZER</title>
     <script src="https://www.gstatic.com/firebasejs/9.15.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.15.0/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.15.0/firebase-database-compat.js"></script>
     <style>
         :root { --primary: #6366f1; --secondary: #a855f7; --neon: #39ff14; --glass: rgba(255, 255, 255, 0.05); --border: rgba(255, 255, 255, 0.1); }
         * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; font-family: 'Inter', sans-serif; }
-        
-        body { 
-            height: 100vh; margin: 0; background: #0f172a; 
-            background: radial-gradient(circle at top, #1e1b4b, #0f172a);
-            color: white; overflow: hidden; 
-        }
-
+        body { height: 100vh; margin: 0; background: #0f172a; background: radial-gradient(circle at top, #1e1b4b, #0f172a); color: white; overflow: hidden; }
         .container { display: flex; flex-direction: column; height: 100vh; max-width: 480px; margin: auto; padding: 10px; }
 
-        /* TOP COUNTER PANEL */
-        .stats-header {
-            display: flex; justify-content: space-between; align-items: center;
-            background: rgba(0,0,0,0.4); padding: 10px 15px; border-radius: 15px;
-            border: 1px solid var(--border); margin-bottom: 8px;
-        }
-        .stat-box { text-align: left; }
-        .stat-label { font-size: 8px; color: #94a3b8; text-transform: uppercase; letter-spacing: 1px; }
-        .stat-value { font-size: 12px; font-weight: 800; color: var(--neon); display: block; }
+        /* Stats & Match Display */
+        .stats-header { display: flex; justify-content: space-between; padding: 10px; background: rgba(0,0,0,0.4); border-radius: 15px; border: 1px solid var(--border); margin-bottom: 8px; }
+        .stat-value { font-size: 11px; font-weight: 800; color: var(--neon); }
+        .match-display { background: rgba(255,255,255,0.03); border: 1px solid var(--border); padding: 10px; border-radius: 18px; text-align: center; margin-bottom: 8px; }
+        #match-rank { font-size: 18px; font-weight: 900; color: #475569; }
+        .match-found { color: var(--neon) !important; text-shadow: 0 0 10px var(--neon); }
 
-        /* MATCH DISPLAY */
-        .match-display { 
-            background: rgba(255,255,255,0.03); border: 1px solid var(--border); 
-            padding: 12px; border-radius: 20px; text-align: center; margin-bottom: 8px;
-        }
-        #match-rank { font-size: 20px; font-weight: 900; display: block; color: #475569; }
-        .match-found { color: var(--neon) !important; text-shadow: 0 0 12px var(--neon); }
-
-        /* INPUT AREA */
-        .game-card { background: var(--glass); backdrop-filter: blur(10px); border: 1px solid var(--border); border-radius: 22px; padding: 10px; }
-        .dot-row { display: flex; gap: 6px; margin-bottom: 10px; overflow-x: auto; scrollbar-width: none; padding-bottom: 5px; min-height: 15px; }
+        /* Game Grid */
+        .game-card { background: var(--glass); backdrop-filter: blur(10px); border: 1px solid var(--border); border-radius: 20px; padding: 10px; }
+        .dot-row { display: flex; gap: 5px; margin-bottom: 10px; overflow-x: auto; scrollbar-width: none; min-height: 12px; }
         .dot { min-width: 10px; height: 10px; border-radius: 50%; background: #334155; flex-shrink: 0; }
-        
-        .planet-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px; }
-        .p-btn { 
-            padding: 12px 5px; border-radius: 12px; border: 1px solid var(--border); 
-            background: rgba(255, 255, 255, 0.03); color: white; font-size: 11px; font-weight: 700; 
-            cursor: pointer; text-align: center;
-        }
+        .planet-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 6px; }
+        .p-btn { padding: 12px 5px; border-radius: 10px; border: 1px solid var(--border); background: rgba(255,255,255,0.03); color: white; font-size: 10px; font-weight: 700; cursor: pointer; }
 
-        /* RESULT PANEL */
-        .result-panel { margin-top: 8px; padding: 15px; background: rgba(0,0,0,0.2); border-radius: 20px; border: 1px solid var(--border); text-align: center; }
-        .result-row { display: flex; justify-content: center; gap: 6px; margin-top: 8px; }
-        .p-box { flex: 1; padding: 14px 2px; border-radius: 12px; font-size: 9px; font-weight: 800; display: none; color: white; border: 1px solid rgba(255,255,255,0.1); }
+        /* 3-PLANET PREDICTION PANEL */
+        .prediction-panel { margin-top: 10px; padding: 12px; background: rgba(0,0,0,0.3); border-radius: 20px; border: 1px solid var(--border); }
+        .pred-label { font-size: 9px; color: #94a3b8; margin-bottom: 8px; display: block; text-align: center; letter-spacing: 1px; }
+        .pred-row { display: grid; grid-template-columns: 1fr 1.2fr 1fr; gap: 8px; align-items: center; }
+        .p-box { padding: 12px 2px; border-radius: 12px; font-size: 8px; font-weight: 800; color: white; text-align: center; border: 1px solid rgba(255,255,255,0.1); display: none; }
+        .main-target { transform: scale(1.1); border: 2px solid var(--neon) !important; box-shadow: 0 0 15px rgba(57, 255, 20, 0.2); }
 
-        .main-btn { 
-            width: 100%; padding: 18px; border-radius: 20px; margin-top: auto; 
-            background: linear-gradient(135deg, var(--primary), var(--secondary)); 
-            color: white; border: none; font-weight: 800; font-size: 15px; cursor: pointer;
-        }
-        .main-btn:disabled { opacity: 0.3; }
-
-        /* LOGIN */
+        .main-btn { width: 100%; padding: 16px; border-radius: 18px; margin-top: auto; background: linear-gradient(135deg, var(--primary), var(--secondary)); color: white; border: none; font-weight: 800; cursor: pointer; }
         #login-screen { position: absolute; inset: 0; z-index: 1000; background: #0f172a; display: flex; align-items: center; justify-content: center; padding: 20px; }
-        .login-card { width: 100%; max-width: 350px; background: var(--glass); padding: 30px; border-radius: 28px; border: 1px solid var(--border); text-align: center; }
-        input { width: 100%; padding: 16px; margin-bottom: 12px; border-radius: 14px; background: rgba(255,255,255,0.05); border: 1px solid var(--border); color: white; outline: none; }
+        .login-card { width: 100%; max-width: 350px; background: var(--glass); padding: 30px; border-radius: 25px; border: 1px solid var(--border); text-align: center; }
+        input { width: 100%; padding: 14px; margin-bottom: 10px; border-radius: 12px; background: rgba(255,255,255,0.05); border: 1px solid var(--border); color: white; outline: none; }
     </style>
 </head>
 <body>
@@ -73,57 +46,57 @@
     <div id="login-screen">
         <div class="login-card">
             <h2 style="margin:0; color: var(--secondary);">VISHU AI</h2>
-            <p style="color: #94a3b8; font-size: 9px; letter-spacing: 2px; margin-bottom: 25px;">CLOUD RECURSIVE ENGINE</p>
-            <input type="email" id="email" placeholder="Access ID">
-            <input type="password" id="password" placeholder="Secure Key">
-            <button class="main-btn" onclick="handleAuth()">LOGIN ENGINE</button>
+            <p style="color: #94a3b8; font-size: 9px; margin-bottom: 25px;">3-POINT SEQUENCE ENGINE</p>
+            <input type="email" id="email" placeholder="User ID">
+            <input type="password" id="password" placeholder="Key">
+            <button class="main-btn" onclick="handleAuth()">LOGIN</button>
         </div>
     </div>
 
     <div id="app-screen" style="display: none; flex-direction: column; height: 100%;">
-        
         <div class="stats-header">
-            <div class="stat-box">
-                <span class="stat-label">Cloud Database</span>
-                <span id="total-rounds-count" class="stat-value">0 ROUNDS</span>
-            </div>
-            <div class="stat-box" style="text-align: right;">
-                <span class="stat-label">Engine Status</span>
-                <span class="stat-value" style="color: #39ff14;">ACTIVE</span>
-            </div>
+            <div><span style="font-size: 8px; color:#94a3b8;">CLOUD DATA</span><br><span id="total-rounds-count" class="stat-value">0</span></div>
+            <div style="text-align: right;"><span style="font-size: 8px; color:#94a3b8;">STATUS</span><br><span class="stat-value">SYNCED</span></div>
         </div>
 
         <div class="match-display">
-            <span style="font-size: 9px; color: #94a3b8; letter-spacing: 1px;">SEQUENCE MATCH DEPTH</span>
-            <span id="match-rank">AWAITING INPUT</span>
+            <span id="match-rank">AWAITING ROUNDS</span>
         </div>
 
         <div class="game-card">
             <div class="dot-row" id="dot-display"></div>
             <div class="planet-grid">
-                <button class="p-btn" onclick="addData('GREEN X5', '#39ff14')">GREEN X5</button>
-                <button class="p-btn" onclick="addData('PURPLE X5', '#bc13fe')">PURPLE X5</button>
-                <button class="p-btn" onclick="addData('YELLOW X5', '#ffff00')">YELLOW X5</button>
-                <button class="p-btn" onclick="addData('LIGHT GREEN X5', '#90ee90')">LT GREEN X5</button>
-                <button class="p-btn" onclick="addData('BIG X10', '#ff4d4d')">BIG X10</button>
-                <button class="p-btn" onclick="addData('BIG X15', '#ff8c00')">BIG X15</button>
-                <button class="p-btn" onclick="addData('BIG X25', '#00ffff')">BIG X25</button>
-                <button class="p-btn" onclick="addData('BIG X50', '#ff00ff')">BIG X50</button>
+                <button class="p-btn" onclick="addData('GREEN X5')">GREEN X5</button>
+                <button class="p-btn" onclick="addData('PURPLE X5')">PURPLE X5</button>
+                <button class="p-btn" onclick="addData('YELLOW X5')">YELLOW X5</button>
+                <button class="p-btn" onclick="addData('LT GREEN X5')">LT GREEN X5</button>
+                <button class="p-btn" onclick="addData('BIG X10')">BIG X10</button>
+                <button class="p-btn" onclick="addData('BIG X15')">BIG X15</button>
+                <button class="p-btn" onclick="addData('BIG X25')">BIG X25</button>
+                <button class="p-btn" onclick="addData('BIG X50')">BIG X50</button>
                 <button class="p-btn" style="background:#1e293b" onclick="undoLast()">UNDO</button>
                 <button class="p-btn" style="background:#1e293b" onclick="resetData()">PURGE</button>
             </div>
         </div>
 
-        <div class="result-panel">
-            <div id="wait-msg" style="font-size: 9px; color: #64748b;">AWAITING ROUND DATA</div>
-            <div class="result-row">
-                <div id="p1" class="p-box"></div>
-                <div id="p2" class="p-box"></div>
-                <div id="p3" class="p-box"></div>
+        <div class="prediction-panel">
+            <div class="pred-row">
+                <div>
+                    <span class="pred-label">BEFORE</span>
+                    <div id="p-prev" class="p-box"></div>
+                </div>
+                <div>
+                    <span class="pred-label" style="color:var(--neon)">NEXT HIT</span>
+                    <div id="p-main" class="p-box main-target"></div>
+                </div>
+                <div>
+                    <span class="pred-label">AFTER</span>
+                    <div id="p-next" class="p-box"></div>
+                </div>
             </div>
         </div>
 
-        <button class="main-btn" id="ai-btn" onclick="executeInfiniteScan()" disabled>EXECUTE RECURSIVE SCAN</button>
+        <button class="main-btn" id="ai-btn" onclick="executeInfiniteScan()" disabled>EXECUTE 3-POINT SCAN</button>
     </div>
 </div>
 
@@ -143,36 +116,30 @@
     let userInput = []; 
     let cloudHistory = []; 
 
-    // Function to update global round count
-    function syncCloudStats() {
+    function syncCloud() {
         db.ref('global_history').on('value', (snap) => {
             if(snap.exists()) {
-                const data = snap.val();
-                const count = Object.keys(data).length;
-                document.getElementById('total-rounds-count').innerText = count + " ROUNDS";
-                cloudHistory = Object.values(data);
+                const data = Object.values(snap.val());
+                document.getElementById('total-rounds-count').innerText = data.length + " RDS";
+                cloudHistory = data;
             }
         });
     }
 
-    function addData(name, color) {
+    function addData(name) {
         userInput.push(name);
         db.ref('global_history').push(name);
         renderDots();
         document.getElementById('ai-btn').disabled = (userInput.length < 2);
-        document.getElementById('match-rank').innerText = "DATA SAVED";
-        document.getElementById('match-rank').classList.remove('match-found');
     }
 
     function renderDots() {
         const container = document.getElementById('dot-display');
         container.innerHTML = "";
-        const colors = { 'GREEN X5': '#39ff14', 'PURPLE X5': '#bc13fe', 'YELLOW X5': '#ffff00', 'LIGHT GREEN X5': '#90ee90', 'BIG X10': '#ff4d4d', 'BIG X15': '#ff8c00', 'BIG X25': '#00ffff', 'BIG X50': '#ff00ff' };
-        userInput.slice(-30).forEach(name => {
+        const colors = { 'GREEN X5': '#39ff14', 'PURPLE X5': '#bc13fe', 'YELLOW X5': '#ffff00', 'LT GREEN X5': '#90ee90', 'BIG X10': '#ff4d4d', 'BIG X15': '#ff8c00', 'BIG X25': '#00ffff', 'BIG X50': '#ff00ff' };
+        userInput.slice(-25).forEach(name => {
             const d = document.createElement('div');
-            d.className = 'dot';
-            d.style.background = colors[name];
-            container.appendChild(d);
+            d.className = 'dot'; d.style.background = colors[name]; container.appendChild(d);
         });
         container.scrollLeft = container.scrollWidth;
     }
@@ -182,64 +149,70 @@
         const btn = document.getElementById('ai-btn');
         btn.disabled = true;
         
-        let foundMatch = false;
-        let nextPrediction = "";
+        let matchIndex = -1;
         let bestSize = 0;
         let maxDepth = Math.min(userInput.length, 100);
 
+        // Recursive matching from 100 down to 1
         for (let size = maxDepth; size >= 1; size--) {
-            rankEl.innerText = `SCANNING ${size} RDS`;
-            await new Promise(r => setTimeout(r, 20));
+            rankEl.innerText = `SCANNING ${size} RDS...`;
+            await new Promise(r => setTimeout(r, 15));
+            
             const currentPattern = userInput.slice(-size).join('|');
-            for (let i = 0; i < cloudHistory.length - size; i++) {
-                if (currentPattern === cloudHistory.slice(i, i + size).join('|')) {
-                    nextPrediction = cloudHistory[i + size];
+            
+            // Search in history for the pattern
+            for (let i = 1; i < cloudHistory.length - (size + 1); i++) {
+                const historyPattern = cloudHistory.slice(i, i + size).join('|');
+                if (currentPattern === historyPattern) {
+                    matchIndex = i; // Store index where pattern starts
                     bestSize = size;
-                    foundMatch = true;
                     break;
                 }
             }
-            if (foundMatch) break;
+            if (matchIndex !== -1) break;
         }
 
-        if (foundMatch) {
-            rankEl.innerText = `FOUND: ${bestSize} RDS`;
+        if (matchIndex !== -1) {
+            rankEl.innerText = `MATCH: ${bestSize} ROUNDS`;
             rankEl.classList.add('match-found');
-            showResults(nextPrediction);
+            
+            // Extract the 3 Points:
+            const prevPlanet = cloudHistory[matchIndex - 1] || "N/A"; // Planet before sequence
+            const mainPlanet = cloudHistory[matchIndex + bestSize]; // Planet after sequence
+            const nextPlanet = cloudHistory[matchIndex + bestSize + 1] || "N/A"; // Planet after that
+            
+            display3Points(prevPlanet, mainPlanet, nextPlanet);
         } else {
-            rankEl.innerText = "NO MATCH";
-            showResults();
+            rankEl.innerText = "SEQUENCE NOT FOUND";
+            display3Points();
         }
         btn.disabled = false;
     }
 
-    function showResults(match) {
-        const boxes = [document.getElementById('p1'), document.getElementById('p2'), document.getElementById('p3')];
-        const allPlanets = [
+    function display3Points(prev, main, next) {
+        const boxes = { prev: document.getElementById('p-prev'), main: document.getElementById('p-main'), next: document.getElementById('p-next') };
+        const planets = [
             {n: "GREEN X5", c: "#22c55e"}, {n: "PURPLE X5", c: "#a855f7"}, 
-            {n: "YELLOW X5", c: "#eab308"}, {n: "LIGHT GREEN X5", c: "#4ade80"},
+            {n: "YELLOW X5", c: "#eab308"}, {n: "LT GREEN X5", c: "#4ade80"},
             {n: "BIG X10", c: "#ef4444"}, {n: "BIG X15", c: "#f97316"}, 
             {n: "BIG X25", c: "#06b6d4"}, {n: "BIG X50", c: "#ec4899"} 
         ];
 
-        let picks = [];
-        if(match) picks.push(allPlanets.find(p => p.n === match));
-        while(picks.length < 3) {
-            let r = allPlanets[Math.floor(Math.random() * allPlanets.length)];
-            if(!picks.includes(r)) picks.push(r);
-        }
+        const updateBox = (el, name) => {
+            if(!name || name === "N/A") { el.style.display = 'none'; return; }
+            const p = planets.find(x => x.n === name) || {n: name, c: "#334155"};
+            el.innerHTML = p.n.replace(" ", "<br>");
+            el.style.background = `linear-gradient(135deg, ${p.c}, #000)`;
+            el.style.display = 'block';
+        };
 
-        picks.forEach((p, i) => {
-            boxes[i].innerHTML = p.n.replace(" ", "<br>");
-            boxes[i].style.background = `linear-gradient(135deg, ${p.c}, #000)`;
-            boxes[i].style.display = 'block';
-        });
-        document.getElementById('wait-msg').innerText = "PREDICTION ACTIVE";
+        updateBox(boxes.prev, prev);
+        updateBox(boxes.main, main);
+        updateBox(boxes.next, next);
     }
 
     function undoLast() { userInput.pop(); renderDots(); }
-    function resetData() { userInput = []; renderDots(); document.getElementById('ai-btn').disabled = true; document.getElementById('match-rank').innerText = "PURGED"; }
-
+    function resetData() { userInput = []; renderDots(); document.getElementById('match-rank').innerText = "AWAITING ROUNDS"; }
     function handleAuth() {
         const email = document.getElementById('email').value;
         const pass = document.getElementById('password').value;
@@ -252,7 +225,7 @@
         if (user) {
             document.getElementById('login-screen').style.display = 'none';
             document.getElementById('app-screen').style.display = 'flex';
-            syncCloudStats();
+            syncCloud();
         }
     });
 </script>
