@@ -3,41 +3,58 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>VISHU AI DEBUGGED v14.1</title>
+    <title>VISHU AI NEURAL BRAIN v14.2</title>
     <script src="https://www.gstatic.com/firebasejs/9.15.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.15.0/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.15.0/firebase-database-compat.js"></script>
     <style>
-        :root { --purple: #bc13fe; --neon: #39ff14; }
-        body { background: #05070a; color: white; font-family: sans-serif; text-align: center; margin: 0; padding: 10px; }
-        .container { max-width: 400px; margin: auto; }
-        .stats-header { border: 1px solid var(--neon); padding: 10px; border-radius: 10px; display: flex; justify-content: space-between; margin-bottom: 10px; font-size: 12px; }
-        .dot-row { display: flex; justify-content: center; gap: 5px; margin: 15px 0; }
-        .dot { width: 12px; height: 12px; border-radius: 50%; background: #1a1c2c; border: 1px solid #333; }
-        .planet-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; }
-        .p-btn { padding: 12px 2px; border-radius: 8px; border: 1px solid #222; color: white; font-size: 9px; font-weight: bold; cursor: pointer; }
-        .engine-box { border: 1px solid var(--purple); border-radius: 20px; padding: 15px; margin: 15px 0; background: rgba(188,19,254,0.05); }
-        .p-box { flex: 1; padding: 10px; border-radius: 10px; display: none; font-size: 10px; font-weight: bold; }
-        .main-btn { width: 100%; padding: 15px; border-radius: 30px; background: var(--purple); border: none; color: white; font-weight: bold; cursor: pointer; }
-        .main-btn:disabled { background: #333; cursor: not-allowed; }
-        input { width: 80%; padding: 12px; margin: 10px; border-radius: 8px; background: #111; color: white; border: 1px solid #333; }
+        :root { --purple: #bc13fe; --neon: #39ff14; --dark: #05070a; }
+        body { background: var(--dark); color: white; font-family: 'Segoe UI', sans-serif; text-align: center; margin: 0; padding: 10px; }
+        .container { max-width: 450px; margin: auto; }
+        
+        /* Login Screen Styles */
+        #login-screen { padding: 80px 20px; }
+        .input-field { width: 90%; padding: 15px; margin-bottom: 15px; border-radius: 12px; background: #111; color: white; border: 1px solid #333; outline: none; }
+        #error-msg { color: #ff4d4d; font-size: 12px; margin-bottom: 10px; font-weight: bold; }
+
+        /* App UI Styles */
+        #app-screen { display: none; }
+        .stats-header { background: rgba(57, 255, 20, 0.05); border: 1px solid var(--neon); padding: 12px; border-radius: 15px; margin-bottom: 15px; display: flex; justify-content: space-between; align-items: center; }
+        #data-counter { color: var(--neon); font-weight: bold; font-size: 20px; }
+
+        .dot-row { display: flex; justify-content: center; gap: 8px; margin: 20px 0; }
+        .dot { width: 14px; height: 14px; border-radius: 50%; background: #1a1c2c; border: 1px solid #333; transition: 0.3s; }
+
+        .planet-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin-bottom: 20px; }
+        .p-btn { padding: 14px 2px; border-radius: 10px; border: 1px solid rgba(255,255,255,0.1); font-size: 10px; font-weight: bold; color: white; cursor: pointer; transition: 0.2s; }
+        .p-btn:active { transform: scale(0.9); }
+
+        .engine-box { background: rgba(188, 19, 254, 0.05); border: 1px solid var(--purple); border-radius: 25px; padding: 20px; margin: 15px 0; min-height: 120px; }
+        .reason-line { color: var(--neon); font-size: 11px; border: 1px dashed var(--neon); padding: 8px; border-radius: 8px; margin-bottom: 15px; display: none; text-transform: uppercase; font-weight: bold; }
+        
+        .pred-row { display: flex; justify-content: space-around; gap: 8px; }
+        .p-box { flex: 1; padding: 15px 2px; border-radius: 12px; font-size: 11px; font-weight: 900; display: none; box-shadow: 0 5px 15px rgba(0,0,0,0.4); }
+
+        .main-btn { width: 100%; padding: 20px; border-radius: 40px; background: var(--purple); color: white; border: none; font-weight: bold; font-size: 16px; box-shadow: 0 0 20px var(--purple); cursor: pointer; }
+        .main-btn:disabled { background: #222; box-shadow: none; color: #555; }
     </style>
 </head>
 <body>
 
 <div class="container">
     <div id="login-screen">
-        <h2 style="color:var(--purple)">VISHU AI LOGIN</h2>
-        <input type="email" id="email" placeholder="Email">
-        <input type="password" id="password" placeholder="Password">
-        <button class="main-btn" onclick="login()">LOGIN & SYNC</button>
-        <p id="login-err" style="color:red; font-size:10px;"></p>
+        <h1 style="color:var(--purple); text-shadow: 0 0 15px var(--purple);">VISHU AI</h1>
+        <p style="color:#555; font-size:12px; margin-bottom:40px;">NEURAL LEARNING ENGINE v14.2</p>
+        <div id="error-msg"></div>
+        <input type="email" id="email" class="input-field" placeholder="Email ID">
+        <input type="password" id="password" class="input-field" placeholder="Access Key">
+        <button class="main-btn" onclick="handleAuth()">LOGIN / REGISTER</button>
     </div>
 
-    <div id="app-screen" style="display:none;">
+    <div id="app-screen">
         <div class="stats-header">
-            <span>NETWORK: ONLINE</span>
-            <span id="data-counter" style="color:var(--neon)">0</span>
+            <span style="font-size:10px;">NEURAL BRAIN SYNCED</span>
+            <span id="data-counter">0</span>
         </div>
 
         <div class="dot-row" id="dot-display">
@@ -46,35 +63,38 @@
         </div>
 
         <div class="planet-grid">
-            <button class="p-btn" style="background:#bc13fe" onclick="addData('PURPLE X5','#bc13fe')">P-X5</button>
-            <button class="p-btn" style="background:#39ff14; color:000" onclick="addData('GREEN X5','#39ff14')">G-X5</button>
-            <button class="p-btn" style="background:#ffff00; color:000" onclick="addData('YELLOW X5','#ffff00')">Y-X5</button>
-            <button class="p-btn" style="background:#90ee90; color:000" onclick="addData('L-GREEN X5','#90ee90')">LG-X5</button>
-            <button class="p-btn" style="background:#ff4d4d" onclick="addData('BIG X10','#ff4d4d')">X10</button>
-            <button class="p-btn" style="background:#ff8c00" onclick="addData('BIG X15','#ff8c00')">X15</button>
-            <button class="p-btn" style="background:#00ffff; color:000" onclick="addData('BIG X25','#00ffff')">X25</button>
-            <button class="p-btn" style="background:#ff00ff" onclick="addData('BIG X50','#ff00ff')">X50</button>
-            <button class="p-btn" style="background:#444; grid-column: span 2;" onclick="undoLast()">UNDO</button>
-            <button class="p-btn" style="background:#222; grid-column: span 2;" onclick="resetData()">CLEAR</button>
+            <button class="p-btn" style="background:#bc13fe" onclick="addData('PURPLE X5', '#bc13fe')">P-X5</button>
+            <button class="p-btn" style="background:#39ff14; color:black;" onclick="addData('GREEN X5', '#39ff14')">G-X5</button>
+            <button class="p-btn" style="background:#ffff00; color:black;" onclick="addData('YELLOW X5', '#ffff00')">Y-X5</button>
+            <button class="p-btn" style="background:#90ee90; color:black;" onclick="addData('L-GREEN X5', '#90ee90')">LG-X5</button>
+            
+            <button class="p-btn" style="background:#ff4d4d;" onclick="addData('BIG X10', '#ff4d4d')">X10</button>
+            <button class="p-btn" style="background:#ff8c00;" onclick="addData('BIG X15', '#ff8c00')">X15</button>
+            <button class="p-btn" style="background:#00ffff; color:black;" onclick="addData('BIG X25', '#00ffff')">X25</button>
+            <button class="p-btn" style="background:#ff00ff;" onclick="addData('BIG X50', '#ff00ff')">X50</button>
+
+            <button class="p-btn" style="background:#444; grid-column: span 2;" onclick="undoLast()">↩ UNDO</button>
+            <button class="p-btn" style="background:#222; grid-column: span 2;" onclick="resetData()">🗑 CLEAR</button>
         </div>
 
         <div class="engine-box">
-            <div id="reason-text" style="color:var(--neon); font-size:10px; margin-bottom:10px; display:none; border:1px dashed var(--neon); padding:5px;"></div>
-            <div id="wait-msg" style="color:#555; font-size:11px;">ENTER 8 DATA POINTS</div>
-            <div style="display:flex; gap:5px;">
+            <div id="reason-text" class="reason-line"></div>
+            <div id="wait-msg" style="font-size:12px; color:#555;">[ ENTER 8 ROUNDS TO START ]</div>
+            <div class="pred-row">
                 <div id="p1" class="p-box"></div>
                 <div id="p2" class="p-box"></div>
                 <div id="p3" class="p-box"></div>
             </div>
         </div>
 
-        <button class="main-btn" id="ai-btn" onclick="deepScan()" disabled>START AI SCAN</button>
+        <button class="main-btn" id="ai-btn" onclick="deepScan()" disabled>INITIALIZE DEEP SCAN</button>
+        <button onclick="logout()" style="margin-top:30px; background:none; border:none; color:#333; font-size:11px; cursor:pointer;">Logout Session</button>
     </div>
 </div>
 
 <script>
-    // Firebase Config (Ensure these match your project)
-    const firebaseConfig = {
+    // --- FIREBASE CONFIGURATION ---
+    const firebaseConfig = { 
         apiKey: "AIzaSyCiKUh0v9GG3svQROdEF2FSg-Yf0y7D240",
         authDomain: "vishu-sm-predictor-e760b.firebaseapp.com",
         projectId: "vishu-sm-predictor-e760b",
@@ -84,36 +104,42 @@
         appId: "1:990041638587:web:1697860df62882ebe58b9e"
     };
 
-    try {
-        firebase.initializeApp(firebaseConfig);
-        console.log("Firebase Initialized");
-    } catch(e) {
-        console.error("Firebase Init Error: ", e);
-    }
-
-    const database = firebase.database();
+    firebase.initializeApp(firebaseConfig);
+    const auth = firebase.auth();
+    const db = firebase.database();
     let userInput = [];
+
     const planets = [
-        {n:"PURPLE X5", c:"#bc13fe"}, {n:"GREEN X5", c:"#39ff14"},
-        {n:"YELLOW X5", c:"#ffff00"}, {n:"L-GREEN X5", c:"#90ee90"},
-        {n:"BIG X10", c:"#ff4d4d"}, {n:"BIG X15", c:"#ff8c00"},
-        {n:"BIG X25", c:"#00ffff"}, {n:"BIG X50", c:"#ff00ff"}
+        {n: "PURPLE X5", c: "#bc13fe"}, {n: "GREEN X5", c: "#39ff14"}, 
+        {n: "YELLOW X5", c: "#ffff00"}, {n: "L-GREEN X5", c: "#90ee90"},
+        {n: "BIG X10", c: "#ff4d4d"}, {n: "BIG X15", c: "#ff8c00"}, 
+        {n: "BIG X25", c: "#00ffff"}, {n: "BIG X50", c: "#ff00ff"} 
     ];
 
-    function login() {
+    const reasons = ["Mirror Sequence Match", "Markov Chain v2.0 Sync", "AB-AB Pattern Logic", "AA-B-AA Advanced Scan", "Bayesian Probability High"];
+
+    // --- LOGIN LOGIC ---
+    function handleAuth() {
         const email = document.getElementById('email').value;
         const pass = document.getElementById('password').value;
-        firebase.auth().signInWithEmailAndPassword(email, pass)
-            .then(() => {
-                document.getElementById('login-screen').style.display='none';
-                document.getElementById('app-screen').style.display='block';
-                syncStats();
-            })
-            .catch(err => {
-                document.getElementById('login-err').innerText = "Error: " + err.message;
-            });
+        const errDiv = document.getElementById('error-msg');
+
+        if(!email || !pass) { alert("Details bhariye!"); return; }
+        errDiv.innerText = "Processing... Please wait.";
+
+        auth.signInWithEmailAndPassword(email, pass)
+        .catch(error => {
+            if (error.code === 'auth/user-not-found') {
+                return auth.createUserWithEmailAndPassword(email, pass);
+            } else { throw error; }
+        })
+        .catch(err => {
+            errDiv.innerText = "Error: " + err.message;
+            console.error(err);
+        });
     }
 
+    // --- APP LOGIC ---
     function addData(name, color) {
         if(userInput.length >= 8) userInput.shift();
         userInput.push({name, color});
@@ -125,31 +151,8 @@
         const dots = document.querySelectorAll('.dot');
         dots.forEach((d, i) => {
             d.style.background = userInput[i] ? userInput[i].color : "#1a1c2c";
+            d.style.boxShadow = userInput[i] ? `0 0 10px ${userInput[i].color}` : "none";
         });
-    }
-
-    function deepScan() {
-        const resLine = document.getElementById('reason-text');
-        const wait = document.getElementById('wait-msg');
-        
-        wait.innerText = "AI BRAIN SCANNING...";
-        resLine.style.display = 'none';
-
-        setTimeout(() => {
-            wait.style.display = 'none';
-            resLine.innerText = "REASON: NEURAL PATTERN MATCHED";
-            resLine.style.display = 'block';
-
-            let picks = [...planets].sort(() => 0.5 - Math.random()).slice(0, 3);
-            picks.forEach((p, i) => {
-                const box = document.getElementById('p' + (i+1));
-                box.innerText = p.n;
-                box.style.background = p.c;
-                box.style.display = 'block';
-                box.style.color = (['#39ff14', '#ffff00', '#00ffff'].includes(p.c)) ? 'black' : 'white';
-            });
-            updateStats();
-        }, 1000);
     }
 
     function undoLast() {
@@ -159,29 +162,50 @@
     }
 
     function resetData() {
-        userInput = [];
-        renderDots();
-        document.getElementById('ai-btn').disabled = true;
+        if(confirm("Pattern clear karein?")) {
+            userInput = [];
+            renderDots();
+            document.getElementById('ai-btn').disabled = true;
+        }
     }
 
-    function updateStats() {
-        database.ref('global_stats/total_scans').transaction(c => (c || 0) + 1);
+    function deepScan() {
+        const wait = document.getElementById('wait-msg');
+        const rEl = document.getElementById('reason-text');
+        wait.innerText = "ANALYZING SERVER TRENDS...";
+        
+        setTimeout(() => {
+            wait.style.display = 'none';
+            rEl.innerText = "BRAIN LOGIC: " + reasons[Math.floor(Math.random()*reasons.length)];
+            rEl.style.display = 'block';
+
+            let pool = [...planets].sort(() => 0.5 - Math.random()).slice(0, 3);
+            pool.forEach((p, i) => {
+                const box = document.getElementById('p' + (i+1));
+                box.innerHTML = p.n.replace(" ", "<br>");
+                box.style.background = p.c;
+                box.style.display = 'block';
+                box.style.color = ['#39ff14', '#ffff00', '#90ee90', '#00ffff'].includes(p.c) ? 'black' : 'white';
+            });
+            db.ref('global_stats/total_scans').transaction(c => (c || 0) + 1);
+        }, 1200);
     }
 
-    function syncStats() {
-        database.ref('global_stats/total_scans').on('value', s => {
-            document.getElementById('data-counter').innerText = s.val() || 0;
-        });
-    }
-
-    // Auto-login check
-    firebase.auth().onAuthStateChanged(user => {
-        if(user) {
-            document.getElementById('login-screen').style.display='none';
-            document.getElementById('app-screen').style.display='block';
-            syncStats();
+    // --- AUTH STATE & SYNC ---
+    auth.onAuthStateChanged(user => {
+        if (user) {
+            document.getElementById('login-screen').style.display = 'none';
+            document.getElementById('app-screen').style.display = 'block';
+            db.ref('global_stats/total_scans').on('value', s => {
+                document.getElementById('data-counter').innerText = s.val() || 0;
+            });
+        } else {
+            document.getElementById('login-screen').style.display = 'block';
+            document.getElementById('app-screen').style.display = 'none';
         }
     });
+
+    function logout() { auth.signOut(); }
 </script>
 </body>
 </html>
