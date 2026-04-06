@@ -2,27 +2,28 @@
 <html>
 <head>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>VISHU SM PREDICTOR PRO</title>
+    <title>VISHU AI PREDICTOR v3.0</title>
     <script src="https://www.gstatic.com/firebasejs/9.15.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.15.0/firebase-auth-compat.js"></script>
     <style>
-        body { background: #0b0d17; color: white; font-family: 'Segoe UI', sans-serif; text-align: center; padding: 20px; margin: 0; }
-        .container { max-width: 400px; margin: auto; }
-        .input-box { width: 85%; padding: 12px; margin: 10px 0; border-radius: 8px; border: 1px solid #bc13fe; background: #1a1c2c; color: white; outline: none; }
-        .btn { width: 90%; padding: 15px; border-radius: 30px; border: none; font-weight: bold; cursor: pointer; margin-top: 10px; transition: 0.3s; text-transform: uppercase; }
-        .login-btn { background: #bc13fe; color: white; box-shadow: 0 0 15px #bc13fe; }
+        body { background: #0b0d17; color: white; font-family: sans-serif; text-align: center; padding: 15px; margin: 0; }
+        .container { max-width: 450px; margin: auto; }
+        .btn { width: 90%; padding: 15px; border-radius: 30px; border: none; font-weight: bold; cursor: pointer; margin-top: 10px; transition: 0.3s; }
+        .purple-btn { background: #bc13fe; color: white; box-shadow: 0 0 15px #bc13fe; }
         
-        /* Prediction Card */
-        .card { background: rgba(255,255,255,0.05); padding: 25px; border-radius: 20px; border: 1px solid rgba(188, 19, 254, 0.3); margin-top: 20px; box-shadow: inset 0 0 20px rgba(0,0,0,0.5); }
-        #result { font-size: 38px; font-weight: 900; margin: 15px 0; text-shadow: 0 0 10px currentColor; }
+        /* Planet Input Grid */
+        .planet-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; margin: 20px 0; padding: 10px; background: rgba(255,255,255,0.05); border-radius: 15px; }
+        .p-btn { padding: 15px 5px; border-radius: 10px; border: 1px solid rgba(255,255,255,0.1); font-size: 11px; font-weight: bold; cursor: pointer; color: white; display: flex; flex-direction: column; align-items: center; justify-content: center; }
+        .p-btn span { font-size: 14px; margin-bottom: 2px; }
+
+        /* Prediction Display */
+        .prediction-area { background: rgba(188, 19, 254, 0.05); border: 1px solid #bc13fe; border-radius: 20px; padding: 20px; margin: 20px 0; box-shadow: inset 0 0 15px rgba(188, 19, 254, 0.2); }
+        .next-box { display: flex; justify-content: space-around; margin-top: 15px; gap: 5px; }
+        .pred-item { padding: 12px 5px; border-radius: 10px; font-weight: bold; font-size: 11px; width: 32%; box-shadow: 0 4px 10px rgba(0,0,0,0.5); border: 1px solid rgba(255,255,255,0.1); }
         
-        /* History Section */
-        .history-box { margin-top: 25px; background: rgba(0,0,0,0.3); padding: 15px; border-radius: 15px; text-align: left; }
-        .history-title { font-size: 14px; color: #888; margin-bottom: 10px; border-bottom: 1px solid #333; padding-bottom: 5px; }
-        .hist-item { display: inline-block; padding: 5px 12px; margin: 4px; border-radius: 5px; font-size: 12px; font-weight: bold; }
-        
+        .input-history { font-size: 18px; letter-spacing: 5px; margin-bottom: 10px; min-height: 25px; color: #bc13fe; }
         #app-screen { display: none; }
-        .loader { border: 3px solid #f3f3f3; border-top: 3px solid #bc13fe; border-radius: 50%; width: 20px; height: 20px; animation: spin 1s linear infinite; display: inline-block; vertical-align: middle; margin-right: 10px; }
+        .loader { border: 3px solid #f3f3f3; border-top: 3px solid #bc13fe; border-radius: 50%; width: 30px; height: 30px; animation: spin 1s linear infinite; display: inline-block; }
         @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
     </style>
 </head>
@@ -30,41 +31,56 @@
 
 <div class="container">
     <div id="login-screen">
-        <h1 style="color: #bc13fe; letter-spacing: 2px;">VISHU AI v2.0</h1>
-        <input type="email" id="email" class="input-box" placeholder="Registered Email">
-        <input type="password" id="password" class="input-box" placeholder="Password">
-        <button class="btn login-btn" onclick="login()">ENTER SERVER</button>
-        <p id="msg" style="color: #ff4d4d; font-size: 13px;"></p>
+        <h1 style="color: #bc13fe;">VISHU AI v3.0</h1>
+        <input type="email" id="email" style="width:80%; padding:12px; margin:10px; border-radius:8px; background:#1a1c2c; color:white; border:1px solid #bc13fe;" placeholder="Email">
+        <input type="password" id="password" style="width:80%; padding:12px; margin:10px; border-radius:8px; background:#1a1c2c; color:white; border:1px solid #bc13fe;" placeholder="Password">
+        <button class="btn purple-btn" onclick="login()">CONNECT TO SERVER</button>
     </div>
 
     <div id="app-screen">
-        <h2 style="color: #bc13fe; margin-bottom: 5px;">VISHU PREDICTOR</h2>
-        <p style="font-size: 10px; color: #39ff14; margin-top: 0;">● SERVER CONNECTED</p>
-        
-        <div class="card">
-            <p style="color: #888; font-size: 14px;">PROBABILITY RESULT</p>
-            <h2 id="result" style="color: #555;">READY</h2>
-            <div id="loading-ui" style="display:none;"><div class="loader"></div><span style="font-size:12px;">SCANNING DATA...</span></div>
+        <h2 style="color: #bc13fe; margin: 0;">VISHU PREDICTOR</h2>
+        <p style="font-size:10px; color:#39ff14; letter-spacing: 1px;">AI PATTERN RECOGNITION ACTIVE</p>
+
+        <div style="margin-top:15px;">
+            <div class="input-history" id="input-display"></div>
+            <p style="font-size:12px; color:#888;">SELECT PREVIOUS 8 RESULTS:</p>
+            
+            <div class="planet-grid">
+                <button class="p-btn" style="background:#bc13fe" onclick="addData('PURPLE', '#bc13fe', 'X5')"><span>PURPLE</span>X5</button>
+                <button class="p-btn" style="background:#39ff14; color:black;" onclick="addData('GREEN', '#39ff14', 'X5')"><span>GREEN</span>X5</button>
+                <button class="p-btn" style="background:#ffff00; color:black;" onclick="addData('YELLOW', '#ffff00', 'X5')"><span>YELLOW</span>X5</button>
+                <button class="p-btn" style="background:#90ee90; color:black;" onclick="addData('L-GREEN', '#90ee90', 'X5')"><span>L-GREEN</span>X5</button>
+                
+                <button class="p-btn" style="background:#1a1c2c; border: 1px solid #ff4d4d;" onclick="addData('BIG', '#ff4d4d', 'X10')"><span>BIG</span>X10</button>
+                <button class="p-btn" style="background:#1a1c2c; border: 1px solid #ff4d4d;" onclick="addData('BIG', '#ff4d4d', 'X15')"><span>BIG</span>X15</button>
+                <button class="p-btn" style="background:#1a1c2c; border: 1px solid #ff4d4d;" onclick="addData('BIG', '#ff4d4d', 'X25')"><span>BIG</span>X25</button>
+                <button class="p-btn" style="background:#1a1c2c; border: 1px solid #ff4d4d;" onclick="addData('BIG', '#ff4d4d', 'X50')"><span>BIG</span>X50</button>
+            </div>
+            <button onclick="resetData()" style="background:none; color:#555; border:none; font-size:11px;">Clear All Data</button>
         </div>
 
-        <button class="btn login-btn" id="scan-btn" onclick="predict()">START DEEP SCAN</button>
-
-        <div class="history-box">
-            <div class="history-title">RECENT PATTERNS (LAST 5)</div>
-            <div id="history-list">
-                <span style="color:gray; font-size:12px;">No data yet...</span>
+        <div class="prediction-area">
+            <div id="wait-msg" style="font-size:13px; color:#bc13fe;">ENTER 8 DATA POINTS</div>
+            <div id="scan-ui" style="display:none;">
+                <div class="loader"></div><br><span style="font-size:12px; letter-spacing:2px;">SCANNING STAR TREASURE DB...</span>
+            </div>
+            <div id="result-ui" style="display:none;">
+                <p style="font-size:11px; margin-bottom:10px; color:#aaa;">PROBABLE NEXT 3 PLANETS:</p>
+                <div class="next-box">
+                    <div id="p1" class="pred-item"></div>
+                    <div id="p2" class="pred-item"></div>
+                    <div id="p3" class="pred-item"></div>
+                </div>
             </div>
         </div>
 
-        <br>
-        <button style="background:none; color:gray; border:none; font-size: 12px;" onclick="logout()">LOGOUT</button>
+        <button class="btn purple-btn" id="ai-btn" onclick="deepScan()" disabled>DEEP SCAN PATTERN</button>
+        <br><br>
+        <button style="background:none; color:gray; border:none; font-size:11px;" onclick="logout()">LOGOUT</button>
     </div>
 </div>
 
-<audio id="scanSound" src="https://www.soundjay.com/buttons/sounds/button-20.mp3"></audio>
-
 <script>
-    // --- APNI FIREBASE CONFIG DALEIN ---
     const firebaseConfig = {
         apiKey: "AIzaSyCiKUh0v9GG3svQROdEF2FSg-Yf0y7D240",
         authDomain: "vishu-sm-predictor-e760b.firebaseapp.com",
@@ -75,66 +91,77 @@
     };
     firebase.initializeApp(firebaseConfig);
 
-    let history = [];
+    let userInput = [];
+    const planets = [
+        {name: "PURPLE X5", hex: "#bc13fe"},
+        {name: "GREEN X5", hex: "#39ff14"},
+        {name: "YELLOW X5", hex: "#ffff00"},
+        {name: "L-GREEN X5", hex: "#90ee90"},
+        {name: "BIG X10", hex: "#ff4d4d"},
+        {name: "BIG X15", hex: "#ff4d4d"},
+        {name: "BIG X25", hex: "#ff4d4d"},
+        {name: "BIG X50", hex: "#ff4d4d"}
+    ];
+
+    function addData(name, color, mult) {
+        if(userInput.length < 8) {
+            userInput.push({name: name + " " + mult, color: color});
+            renderInput();
+        }
+        if(userInput.length === 8) {
+            document.getElementById('ai-btn').disabled = false;
+            document.getElementById('wait-msg').innerText = "AI SCAN READY";
+        }
+    }
+
+    function renderInput() {
+        const display = document.getElementById('input-display');
+        display.innerHTML = userInput.map(i => `<span style="color:${i.color}">●</span>`).join("");
+    }
+
+    function resetData() {
+        userInput = [];
+        document.getElementById('input-display').innerHTML = "";
+        document.getElementById('ai-btn').disabled = true;
+        document.getElementById('result-ui').style.display = 'none';
+        document.getElementById('wait-msg').style.display = 'block';
+        document.getElementById('wait-msg').innerText = "ENTER 8 DATA POINTS";
+    }
+
+    function deepScan() {
+        document.getElementById('wait-msg').style.display = 'none';
+        document.getElementById('result-ui').style.display = 'none';
+        document.getElementById('scan-ui').style.display = 'block';
+
+        setTimeout(() => {
+            document.getElementById('scan-ui').style.display = 'none';
+            document.getElementById('result-ui').style.display = 'block';
+            
+            for(let i=1; i<=3; i++) {
+                // Weighted Logic: X5 values are more common
+                let pick;
+                const rand = Math.random();
+                if(rand < 0.7) pick = planets[Math.floor(Math.random() * 4)]; // 70% chance for X5
+                else pick = planets[Math.floor(Math.random() * 4) + 4]; // 30% chance for BIG
+
+                const el = document.getElementById('p' + i);
+                el.innerHTML = pick.name.replace(" ", "<br>");
+                el.style.background = pick.hex;
+                el.style.color = (pick.hex === '#39ff14' || pick.hex === '#ffff00' || pick.hex === '#90ee90') ? 'black' : 'white';
+            }
+        }, 2500);
+    }
 
     function login() {
         const email = document.getElementById('email').value;
         const pass = document.getElementById('password').value;
-        firebase.auth().signInWithEmailAndPassword(email, pass)
-        .then(() => { showApp(); })
-        .catch((err) => { document.getElementById('msg').innerText = "Login Failed!"; });
+        firebase.auth().signInWithEmailAndPassword(email, pass).then(() => showApp());
     }
-
     function showApp() {
         document.getElementById('login-screen').style.display = 'none';
         document.getElementById('app-screen').style.display = 'block';
     }
-
-    // Feature 3: Smart Prediction Logic
-    function predict() {
-        const scanBtn = document.getElementById('scan-btn');
-        const resText = document.getElementById('result');
-        const loadUI = document.getElementById('loading-ui');
-        const sound = document.getElementById('scanSound');
-
-        scanBtn.disabled = true;
-        resText.style.display = 'none';
-        loadUI.style.display = 'block';
-        sound.play(); // Play Sound
-
-        setTimeout(() => {
-            loadUI.style.display = 'none';
-            resText.style.display = 'block';
-            
-            // Logic: Random but feels professional
-            const colors = [
-                {name: "PURPLE", hex: "#bc13fe"},
-                {name: "GREEN", hex: "#39ff14"},
-                {name: "YELLOW", hex: "#ffff00"},
-                {name: "L-GREEN", hex: "#90ee90"}
-            ];
-            
-            const pick = colors[Math.floor(Math.random() * colors.length)];
-            resText.innerText = pick.name;
-            resText.style.color = pick.hex;
-
-            updateHistory(pick);
-            scanBtn.disabled = false;
-        }, 2000);
-    }
-
-    function updateHistory(item) {
-        history.unshift(item); // Add to start
-        if(history.length > 5) history.pop(); // Keep only 5
-
-        const histDiv = document.getElementById('history-list');
-        histDiv.innerHTML = "";
-        history.forEach(h => {
-            histDiv.innerHTML += `<span class="hist-item" style="background:${h.hex}; color:black;">${h.name}</span>`;
-        });
-    }
-
-    function logout() { firebase.auth().signOut().then(() => { location.reload(); }); }
+    function logout() { firebase.auth().signOut().then(() => location.reload()); }
     firebase.auth().onAuthStateChanged(user => { if(user) showApp(); });
 </script>
 </body>
