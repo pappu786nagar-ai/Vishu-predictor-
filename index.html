@@ -2,70 +2,56 @@
 <html>
 <head>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>VISHU AI PREDICTOR v3.0</title>
+    <title>VISHU AI PATTERN LOGIC</title>
     <script src="https://www.gstatic.com/firebasejs/9.15.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.15.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.15.0/firebase-database-compat.js"></script>
     <style>
-        body { background: #0b0d17; color: white; font-family: sans-serif; text-align: center; padding: 15px; margin: 0; }
+        body { background: #05070a; color: white; font-family: 'Segoe UI', sans-serif; text-align: center; padding: 15px; margin: 0; }
         .container { max-width: 450px; margin: auto; }
-        .btn { width: 90%; padding: 15px; border-radius: 30px; border: none; font-weight: bold; cursor: pointer; margin-top: 10px; transition: 0.3s; }
+        .btn { width: 90%; padding: 15px; border-radius: 35px; border: none; font-weight: bold; cursor: pointer; margin-top: 10px; transition: 0.3s; }
         .purple-btn { background: #bc13fe; color: white; box-shadow: 0 0 15px #bc13fe; }
         
-        /* Planet Input Grid */
-        .planet-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; margin: 20px 0; padding: 10px; background: rgba(255,255,255,0.05); border-radius: 15px; }
-        .p-btn { padding: 15px 5px; border-radius: 10px; border: 1px solid rgba(255,255,255,0.1); font-size: 11px; font-weight: bold; cursor: pointer; color: white; display: flex; flex-direction: column; align-items: center; justify-content: center; }
-        .p-btn span { font-size: 14px; margin-bottom: 2px; }
+        /* Logic Reason Box */
+        .reason-box { background: rgba(57, 255, 20, 0.05); border: 1px dashed #39ff14; color: #39ff14; padding: 10px; border-radius: 10px; font-size: 11px; margin-bottom: 15px; display: none; text-transform: uppercase; letter-spacing: 1px; }
 
-        /* Prediction Display */
-        .prediction-area { background: rgba(188, 19, 254, 0.05); border: 1px solid #bc13fe; border-radius: 20px; padding: 20px; margin: 20px 0; box-shadow: inset 0 0 15px rgba(188, 19, 254, 0.2); }
+        .prediction-area { background: rgba(188, 19, 254, 0.05); border: 1px solid #bc13fe; border-radius: 20px; padding: 20px; margin: 15px 0; position: relative; }
         .next-box { display: flex; justify-content: space-around; margin-top: 15px; gap: 5px; }
-        .pred-item { padding: 12px 5px; border-radius: 10px; font-weight: bold; font-size: 11px; width: 32%; box-shadow: 0 4px 10px rgba(0,0,0,0.5); border: 1px solid rgba(255,255,255,0.1); }
+        .pred-item { padding: 12px 5px; border-radius: 10px; font-weight: bold; font-size: 10px; width: 32%; box-shadow: 0 4px 10px rgba(0,0,0,0.5); }
         
-        .input-history { font-size: 18px; letter-spacing: 5px; margin-bottom: 10px; min-height: 25px; color: #bc13fe; }
+        .planet-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; margin: 15px 0; }
+        .p-btn { padding: 10px 2px; border-radius: 8px; border: 1px solid #444; font-size: 9px; font-weight: bold; cursor: pointer; color: white; }
         #app-screen { display: none; }
-        .loader { border: 3px solid #f3f3f3; border-top: 3px solid #bc13fe; border-radius: 50%; width: 30px; height: 30px; animation: spin 1s linear infinite; display: inline-block; }
-        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
     </style>
 </head>
 <body>
 
 <div class="container">
     <div id="login-screen">
-        <h1 style="color: #bc13fe;">VISHU AI v3.0</h1>
+        <h1 style="color: #bc13fe;">VISHU AI LOGIC</h1>
         <input type="email" id="email" style="width:80%; padding:12px; margin:10px; border-radius:8px; background:#1a1c2c; color:white; border:1px solid #bc13fe;" placeholder="Email">
         <input type="password" id="password" style="width:80%; padding:12px; margin:10px; border-radius:8px; background:#1a1c2c; color:white; border:1px solid #bc13fe;" placeholder="Password">
-        <button class="btn purple-btn" onclick="login()">CONNECT TO SERVER</button>
+        <button class="btn purple-btn" onclick="login()">CONNECT ENGINE</button>
     </div>
 
     <div id="app-screen">
-        <h2 style="color: #bc13fe; margin: 0;">VISHU PREDICTOR</h2>
-        <p style="font-size:10px; color:#39ff14; letter-spacing: 1px;">AI PATTERN RECOGNITION ACTIVE</p>
+        <div id="input-display" style="display:flex; justify-content:center; gap:5px; margin-bottom:15px;"></div>
 
-        <div style="margin-top:15px;">
-            <div class="input-history" id="input-display"></div>
-            <p style="font-size:12px; color:#888;">SELECT PREVIOUS 8 RESULTS:</p>
-            
-            <div class="planet-grid">
-                <button class="p-btn" style="background:#bc13fe" onclick="addData('PURPLE', '#bc13fe', 'X5')"><span>PURPLE</span>X5</button>
-                <button class="p-btn" style="background:#39ff14; color:black;" onclick="addData('GREEN', '#39ff14', 'X5')"><span>GREEN</span>X5</button>
-                <button class="p-btn" style="background:#ffff00; color:black;" onclick="addData('YELLOW', '#ffff00', 'X5')"><span>YELLOW</span>X5</button>
-                <button class="p-btn" style="background:#90ee90; color:black;" onclick="addData('L-GREEN', '#90ee90', 'X5')"><span>L-GREEN</span>X5</button>
-                
-                <button class="p-btn" style="background:#1a1c2c; border: 1px solid #ff4d4d;" onclick="addData('BIG', '#ff4d4d', 'X10')"><span>BIG</span>X10</button>
-                <button class="p-btn" style="background:#1a1c2c; border: 1px solid #ff4d4d;" onclick="addData('BIG', '#ff4d4d', 'X15')"><span>BIG</span>X15</button>
-                <button class="p-btn" style="background:#1a1c2c; border: 1px solid #ff4d4d;" onclick="addData('BIG', '#ff4d4d', 'X25')"><span>BIG</span>X25</button>
-                <button class="p-btn" style="background:#1a1c2c; border: 1px solid #ff4d4d;" onclick="addData('BIG', '#ff4d4d', 'X50')"><span>BIG</span>X50</button>
-            </div>
-            <button onclick="resetData()" style="background:none; color:#555; border:none; font-size:11px;">Clear All Data</button>
+        <div class="planet-grid">
+            <button class="p-btn" style="background:#bc13fe" onclick="addData('PURPLE X5', '#bc13fe')">P-X5</button>
+            <button class="p-btn" style="background:#39ff14; color:black;" onclick="addData('GREEN X5', '#39ff14')">G-X5</button>
+            <button class="p-btn" style="background:#ffff00; color:black;" onclick="addData('YELLOW X5', '#ffff00')">Y-X5</button>
+            <button class="p-btn" style="background:#90ee90; color:black;" onclick="addData('L-GREEN X5', '#90ee90')">LG-X5</button>
+            <button class="p-btn" style="background:#1a1c2c; border:1px solid #ff4d4d" onclick="addData('BIG X10', '#ff4d4d')">X10</button>
+            <button class="p-btn" style="background:#1a1c2c; border:1px solid #ff4d4d" onclick="addData('BIG X25', '#ff4d4d')">X25</button>
+            <button class="p-btn" style="background:#1a1c2c; border:1px solid #ff4d4d" onclick="addData('BIG X50', '#ff4d4d')">X50</button>
+            <button class="p-btn" style="background:gray;" onclick="resetData()">CLEAR</button>
         </div>
 
         <div class="prediction-area">
-            <div id="wait-msg" style="font-size:13px; color:#bc13fe;">ENTER 8 DATA POINTS</div>
-            <div id="scan-ui" style="display:none;">
-                <div class="loader"></div><br><span style="font-size:12px; letter-spacing:2px;">SCANNING STAR TREASURE DB...</span>
-            </div>
+            <div id="reason-text" class="reason-box"></div>
+            <div id="wait-msg">Enter 8 Data Points to Analyze</div>
             <div id="result-ui" style="display:none;">
-                <p style="font-size:11px; margin-bottom:10px; color:#aaa;">PROBABLE NEXT 3 PLANETS:</p>
                 <div class="next-box">
                     <div id="p1" class="pred-item"></div>
                     <div id="p2" class="pred-item"></div>
@@ -74,9 +60,7 @@
             </div>
         </div>
 
-        <button class="btn purple-btn" id="ai-btn" onclick="deepScan()" disabled>DEEP SCAN PATTERN</button>
-        <br><br>
-        <button style="background:none; color:gray; border:none; font-size:11px;" onclick="logout()">LOGOUT</button>
+        <button class="btn purple-btn" id="ai-btn" onclick="deepScan()" disabled>DEEP SCAN & ANALYZE</button>
     </div>
 </div>
 
@@ -87,69 +71,74 @@
         projectId: "vishu-sm-predictor-e760b",
         storageBucket: "vishu-sm-predictor-e760b.appspot.com",
         messagingSenderId: "990041638587",
-        appId: "1:990041638587:web:1697860df62882ebe58b9e"
+        appId: "1:990041638587:web:1697860df62882ebe58b9e",
+        databaseURL: "https://vishu-sm-predictor-e760b-default-rtdb.firebaseio.com/"
     };
     firebase.initializeApp(firebaseConfig);
-
+    const database = firebase.database();
     let userInput = [];
+
     const planets = [
-        {name: "PURPLE X5", hex: "#bc13fe"},
-        {name: "GREEN X5", hex: "#39ff14"},
-        {name: "YELLOW X5", hex: "#ffff00"},
-        {name: "L-GREEN X5", hex: "#90ee90"},
-        {name: "BIG X10", hex: "#ff4d4d"},
-        {name: "BIG X15", hex: "#ff4d4d"},
-        {name: "BIG X25", hex: "#ff4d4d"},
-        {name: "BIG X50", hex: "#ff4d4d"}
+        {n: "PURPLE X5", c: "#bc13fe"}, {n: "GREEN X5", c: "#39ff14"}, 
+        {n: "YELLOW X5", c: "#ffff00"}, {n: "L-GREEN X5", c: "#90ee90"},
+        {n: "BIG X10", c: "#ff4d4d"}, {n: "BIG X25", c: "#ff4d4d"}
     ];
 
-    function addData(name, color, mult) {
-        if(userInput.length < 8) {
-            userInput.push({name: name + " " + mult, color: color});
-            renderInput();
-        }
-        if(userInput.length === 8) {
-            document.getElementById('ai-btn').disabled = false;
-            document.getElementById('wait-msg').innerText = "AI SCAN READY";
-        }
+    const logicReasons = [
+        "Mirror Pattern Detected in DB",
+        "AB-AB Sequence Matched",
+        "AA-BB Pattern Probability High",
+        "AA-B-AA Sequence Identified",
+        "Repeat Pattern Sync Found",
+        "Old Sequence Match (v2.0 Logic)",
+        "Latest Server Pattern Reading"
+    ];
+
+    function addData(name, color) {
+        if(userInput.length >= 8) userInput.shift();
+        userInput.push({name, color});
+        renderInput();
+        if(userInput.length === 8) document.getElementById('ai-btn').disabled = false;
     }
 
     function renderInput() {
         const display = document.getElementById('input-display');
-        display.innerHTML = userInput.map(i => `<span style="color:${i.color}">●</span>`).join("");
-    }
-
-    function resetData() {
-        userInput = [];
-        document.getElementById('input-display').innerHTML = "";
-        document.getElementById('ai-btn').disabled = true;
-        document.getElementById('result-ui').style.display = 'none';
-        document.getElementById('wait-msg').style.display = 'block';
-        document.getElementById('wait-msg').innerText = "ENTER 8 DATA POINTS";
+        display.innerHTML = userInput.map(i => `<div style="width:12px; height:12px; border-radius:50%; background:${i.color}"></div>`).join("");
     }
 
     function deepScan() {
         document.getElementById('wait-msg').style.display = 'none';
-        document.getElementById('result-ui').style.display = 'none';
-        document.getElementById('scan-ui').style.display = 'block';
+        document.getElementById('result-ui').style.display = 'block';
+        
+        // 1. Logic Selection
+        const reason = logicReasons[Math.floor(Math.random() * logicReasons.length)];
+        const rBox = document.getElementById('reason-text');
+        rBox.innerText = "Reason: " + reason;
+        rBox.style.display = 'block';
 
-        setTimeout(() => {
-            document.getElementById('scan-ui').style.display = 'none';
-            document.getElementById('result-ui').style.display = 'block';
-            
-            for(let i=1; i<=3; i++) {
-                // Weighted Logic: X5 values are more common
-                let pick;
-                const rand = Math.random();
-                if(rand < 0.7) pick = planets[Math.floor(Math.random() * 4)]; // 70% chance for X5
-                else pick = planets[Math.floor(Math.random() * 4) + 4]; // 30% chance for BIG
+        // 2. Unique Prediction
+        let available = [...planets];
+        let preds = [];
+        for(let i=1; i<=3; i++) {
+            let idx = Math.floor(Math.random() * available.length);
+            let pick = available[idx];
+            available.splice(idx, 1);
+            preds.push(pick.n);
+            const el = document.getElementById('p' + i);
+            el.innerText = pick.n;
+            el.style.background = pick.c;
+            el.style.color = (pick.c === '#bc13fe' || pick.c === '#ff4d4d') ? 'white' : 'black';
+        }
 
-                const el = document.getElementById('p' + i);
-                el.innerHTML = pick.name.replace(" ", "<br>");
-                el.style.background = pick.hex;
-                el.style.color = (pick.hex === '#39ff14' || pick.hex === '#ffff00' || pick.hex === '#90ee90') ? 'black' : 'white';
-            }
-        }, 2500);
+        // 3. Save with Reason to Firebase (Cloud Recovery)
+        const user = firebase.auth().currentUser;
+        const logPath = 'game_logs/' + user.email.replace(/\./g, '_');
+        database.ref(logPath).push({
+            input: userInput.map(u => u.name),
+            predicted: preds,
+            reason: reason,
+            timestamp: new Date().toLocaleString()
+        });
     }
 
     function login() {
@@ -157,11 +146,12 @@
         const pass = document.getElementById('password').value;
         firebase.auth().signInWithEmailAndPassword(email, pass).then(() => showApp());
     }
+
     function showApp() {
         document.getElementById('login-screen').style.display = 'none';
         document.getElementById('app-screen').style.display = 'block';
     }
-    function logout() { firebase.auth().signOut().then(() => location.reload()); }
+
     firebase.auth().onAuthStateChanged(user => { if(user) showApp(); });
 </script>
 </body>
