@@ -1,46 +1,56 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
+    <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>VISHU AI ULTIMATE v10.0</title>
+    <title>VISHU AI NEURAL BRAIN v14.0</title>
     <script src="https://www.gstatic.com/firebasejs/9.15.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.15.0/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.15.0/firebase-database-compat.js"></script>
     <style>
-        body { background: #05070a; color: white; font-family: sans-serif; text-align: center; padding: 10px; margin: 0; }
+        :root { --purple: #bc13fe; --neon-green: #39ff14; --dark-bg: #05070a; }
+        body { background: var(--dark-bg); color: white; font-family: 'Segoe UI', sans-serif; text-align: center; padding: 10px; margin: 0; }
         .container { max-width: 450px; margin: auto; }
         
-        /* FEATURE: Online Counter Box */
-        .stats-header { background: rgba(57, 255, 20, 0.1); border: 1px solid #39ff14; padding: 10px; border-radius: 12px; margin-bottom: 10px; display: flex; justify-content: space-between; align-items: center; }
-        #data-counter { color: #39ff14; font-weight: bold; font-size: 18px; }
+        /* Stats Dashboard */
+        .stats-header { background: rgba(57, 255, 20, 0.05); border: 1px solid var(--neon-green); padding: 12px; border-radius: 15px; margin-bottom: 15px; display: flex; justify-content: space-between; align-items: center; }
+        #data-counter { color: var(--neon-green); font-weight: bold; font-size: 20px; }
 
-        /* History Dots */
-        .dot-row { display: flex; justify-content: center; gap: 5px; margin: 15px 0; }
-        .dot { width: 12px; height: 12px; border-radius: 50%; background: #222; }
+        /* Neural Dots */
+        .dot-row { display: flex; justify-content: center; gap: 8px; margin: 20px 0; }
+        .dot { width: 14px; height: 14px; border-radius: 50%; background: #1a1c2c; border: 1px solid #333; transition: 0.3s; }
 
-        /* Planet Grid */
-        .planet-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; margin-bottom: 15px; }
-        .p-btn { padding: 12px 2px; border-radius: 8px; border: 1px solid #333; font-size: 9px; font-weight: bold; color: white; cursor: pointer; }
+        /* Grid System */
+        .planet-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin-bottom: 20px; }
+        .p-btn { padding: 14px 2px; border-radius: 10px; border: 1px solid rgba(255,255,255,0.1); font-size: 10px; font-weight: bold; color: white; cursor: pointer; transition: 0.2s; }
+        .p-btn:active { transform: scale(0.9); }
+        .ctrl-btn { grid-column: span 2; font-size: 12px; letter-spacing: 1px; }
 
-        /* Prediction Area & Reason */
-        .engine-box { background: rgba(188, 19, 254, 0.05); border: 1px solid #bc13fe; border-radius: 20px; padding: 15px; margin: 10px 0; }
-        .reason-line { color: #39ff14; font-size: 10px; border: 1px dashed #39ff14; padding: 5px; border-radius: 5px; margin-bottom: 10px; display: none; text-transform: uppercase; }
+        /* AI Prediction Box */
+        .engine-box { background: rgba(188, 19, 254, 0.05); border: 1px solid var(--purple); border-radius: 25px; padding: 20px; margin: 15px 0; min-height: 100px; }
+        .reason-line { color: var(--neon-green); font-size: 11px; border: 1px dashed var(--neon-green); padding: 8px; border-radius: 8px; margin-bottom: 15px; display: none; text-transform: uppercase; font-weight: bold; }
         
-        .pred-row { display: flex; justify-content: space-around; gap: 5px; }
-        .p-box { flex: 1; padding: 10px 2px; border-radius: 10px; font-size: 10px; font-weight: bold; display: none; }
+        .pred-row { display: flex; justify-content: space-around; gap: 8px; }
+        .p-box { flex: 1; padding: 15px 2px; border-radius: 12px; font-size: 11px; font-weight: 900; display: none; box-shadow: 0 5px 15px rgba(0,0,0,0.4); }
 
-        .main-btn { width: 100%; padding: 18px; border-radius: 35px; background: #bc13fe; color: white; border: none; font-weight: bold; font-size: 16px; box-shadow: 0 0 20px #bc13fe; cursor: pointer; }
-        .main-btn:disabled { background: #444; box-shadow: none; }
+        /* Main Scan Button */
+        .main-btn { width: 100%; padding: 20px; border-radius: 40px; background: var(--purple); color: white; border: none; font-weight: bold; font-size: 16px; box-shadow: 0 0 20px var(--purple); cursor: pointer; }
+        .main-btn:disabled { background: #222; box-shadow: none; color: #555; }
 
-        /* FEATURE: Cloud Recovery Logs */
-        .cloud-logs { margin-top: 20px; background: #111; border-radius: 10px; padding: 10px; text-align: left; max-height: 150px; overflow-y: auto; font-size: 11px; }
+        /* Cloud Recovery Section */
+        .cloud-logs { margin-top: 25px; background: #0a0c14; border-radius: 20px; padding: 15px; text-align: left; max-height: 180px; overflow-y: auto; font-size: 11px; border: 1px solid #1a1c2c; }
+        .log-item { border-bottom: 1px solid #222; padding: 8px 0; }
+        
+        /* Login Screen */
+        #login-screen { padding: 80px 20px; }
+        .input-field { width: 85%; padding: 15px; margin-bottom: 15px; border-radius: 12px; background: #111; color: white; border: 1px solid #333; outline: none; }
     </style>
 </head>
 <body>
 
 <div class="container" id="app-screen" style="display:none;">
     <div class="stats-header">
-        <span style="font-size:10px;">GLOBAL SCANS SAVED:</span>
+        <span style="font-size:10px;">NEURAL BRAIN SYNCED</span>
         <span id="data-counter">0</span>
     </div>
 
@@ -54,15 +64,19 @@
         <button class="p-btn" style="background:#39ff14; color:black;" onclick="addData('GREEN X5', '#39ff14')">G-X5</button>
         <button class="p-btn" style="background:#ffff00; color:black;" onclick="addData('YELLOW X5', '#ffff00')">Y-X5</button>
         <button class="p-btn" style="background:#90ee90; color:black;" onclick="addData('L-GREEN X5', '#90ee90')">LG-X5</button>
-        <button class="p-btn" style="background:#1a1c2c; border:1px solid #ff4d4d" onclick="addData('BIG X10', '#ff4d4d')">X10</button>
-        <button class="p-btn" style="background:#1a1c2c; border:1px solid #ff4d4d" onclick="addData('BIG X15', '#ff4d4d')">X15</button>
-        <button class="p-btn" style="background:#1a1c2c; border:1px solid #ff4d4d" onclick="addData('BIG X25', '#ff4d4d')">X25</button>
-        <button class="p-btn" style="background:#333;" onclick="resetData()">CLEAR</button>
+        
+        <button class="p-btn" style="background:#ff4d4d;" onclick="addData('BIG X10', '#ff4d4d')">X10</button>
+        <button class="p-btn" style="background:#ff8c00;" onclick="addData('BIG X15', '#ff8c00')">X15</button>
+        <button class="p-btn" style="background:#00ffff; color:black;" onclick="addData('BIG X25', '#00ffff')">X25</button>
+        <button class="p-btn" style="background:#ff00ff;" onclick="addData('BIG X50', '#ff00ff')">X50</button>
+
+        <button class="p-btn ctrl-btn" style="background:#444;" onclick="undoLast()">↩ UNDO</button>
+        <button class="p-btn ctrl-btn" style="background:#222;" onclick="resetData()">🗑 CLEAR</button>
     </div>
 
     <div class="engine-box">
         <div id="reason-text" class="reason-line"></div>
-        <div id="wait-msg" style="font-size:12px; color:#666;">Enter 8 Rounds to Unlock AI</div>
+        <div id="wait-msg" style="font-size:12px; color:#555;">[ ENTER 8 ROUNDS TO SCAN ]</div>
         <div class="pred-row" id="result-ui">
             <div id="p1" class="p-box"></div>
             <div id="p2" class="p-box"></div>
@@ -70,122 +84,9 @@
         </div>
     </div>
 
-    <button class="main-btn" id="ai-btn" onclick="deepScan()" disabled>DEEP SCAN & CLOUD SAVE</button>
+    <button class="main-btn" id="ai-btn" onclick="deepScan()" disabled>INITIALIZE DEEP SCAN</button>
 
     <div class="cloud-logs">
-        <p style="color:#bc13fe; margin:0 0 5px 0;">RECENT CLOUD LOGS (Recovered):</p>
-        <div id="logs-list">No data found in Cloud.</div>
+        <p style="color:var(--purple); margin:0 0 10px 0; font-weight:bold;">RECOVERED CLOUD LOGS:</p>
+        <div id="logs-list" style="color:#444;">Connecting to server...</div>
     </div>
-</div>
-
-<div id="login-screen" style="padding:50px 20px;">
-    <h2 style="color:#bc13fe;">VISHU LOGIN</h2>
-    <input type="email" id="email" style="width:90%; padding:12px; margin:10px; border-radius:8px;" placeholder="Email">
-    <input type="password" id="password" style="width:90%; padding:12px; margin:10px; border-radius:8px;" placeholder="Password">
-    <button class="main-btn" onclick="login()">LOGIN / SYNC</button>
-</div>
-
-<script>
-    // Config wahi rahegi jo aapne di thi
-    const firebaseConfig = { 
-        apiKey: "AIzaSyCiKUh0v9GG3svQROdEF2FSg-Yf0y7D240",
-        authDomain: "vishu-sm-predictor-e760b.firebaseapp.com",
-        projectId: "vishu-sm-predictor-e760b",
-        storageBucket: "vishu-sm-predictor-e760b.appspot.com",
-        messagingSenderId: "990041638587",
-        appId: "1:990041638587:web:1697860df62882ebe58b9e",
-        databaseURL: "https://vishu-sm-predictor-e760b-default-rtdb.firebaseio.com/"
-    };
-    firebase.initializeApp(firebaseConfig);
-    const database = firebase.database();
-    let userInput = [];
-
-    const planets = [
-        {n: "PURPLE X5", c: "#bc13fe"}, {n: "GREEN X5", c: "#39ff14"}, 
-        {n: "YELLOW X5", c: "#ffff00"}, {n: "L-GREEN X5", c: "#90ee90"},
-        {n: "BIG X10", c: "#ff4d4d"}, {n: "BIG X25", c: "#ff4d4d"}
-    ];
-
-    const reasons = ["Mirror Pattern", "AB-AB Sequence", "AA-BB Pattern", "AA-B-AA Sequence", "Repeat Scan"];
-
-    function addData(name, color) {
-        if(userInput.length >= 8) userInput.shift();
-        userInput.push({name, color});
-        renderInput();
-        if(userInput.length === 8) document.getElementById('ai-btn').disabled = false;
-    }
-
-    function renderInput() {
-        const dots = document.querySelectorAll('.dot');
-        dots.forEach((d, i) => {
-            d.style.background = userInput[i] ? userInput[i].color : "#222";
-        });
-    }
-
-    function deepScan() {
-        document.getElementById('wait-msg').style.display = 'none';
-        
-        // 1. Logic Reason
-        const reason = reasons[Math.floor(Math.random()*reasons.length)];
-        const rEl = document.getElementById('reason-text');
-        rEl.innerText = "REASON: " + reason;
-        rEl.style.display = 'block';
-
-        // 2. Unique 3 Prediction
-        let available = [...planets];
-        let preds = [];
-        for(let i=1; i<=3; i++) {
-            let idx = Math.floor(Math.random()*available.length);
-            let pick = available[idx];
-            available.splice(idx, 1);
-            preds.push(pick.n);
-            
-            const box = document.getElementById('p' + i);
-            box.innerHTML = pick.n.replace(" ", "<br>");
-            box.style.background = pick.c;
-            box.style.display = 'block';
-            box.style.color = (pick.c === '#39ff14' || pick.c === '#ffff00') ? 'black' : 'white';
-        }
-
-        // 3. Cloud Save
-        const user = firebase.auth().currentUser;
-        const path = 'game_logs/' + user.email.replace(/\./g, '_');
-        database.ref(path).push({
-            input: userInput.map(u => u.name),
-            predicted: preds,
-            reason: reason,
-            timestamp: new Date().toLocaleString()
-        });
-        database.ref('global_stats/total_scans').transaction(c => (c || 0) + 1);
-    }
-
-    function fetchCloudData() {
-        const user = firebase.auth().currentUser;
-        const path = 'game_logs/' + user.email.replace(/\./g, '_');
-        database.ref(path).limitToLast(5).on('value', snap => {
-            const list = document.getElementById('logs-list');
-            list.innerHTML = "";
-            snap.forEach(child => {
-                const d = child.val();
-                list.innerHTML += `<div style="border-bottom:1px solid #222; padding:5px;">
-                    <span style="color:#39ff14;">${d.reason}</span> → ${d.predicted.join(", ")}
-                </div>`;
-            });
-        });
-        database.ref('global_stats/total_scans').on('value', s => {
-            document.getElementById('data-counter').innerText = s.val() || 0;
-        });
-    }
-
-    function login() {
-        const e = document.getElementById('email').value;
-        const p = document.getElementById('password').value;
-        firebase.auth().signInWithEmailAndPassword(e, p).then(() => {
-            document.getElementById('login-screen').style.display='none';
-            document.getElementById('app-screen').style.display='block';
-            fetchCloudData();
-        });
-    }
-</script>
-</body>
-</html>
