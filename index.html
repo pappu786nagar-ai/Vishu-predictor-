@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>VISHU AI v24.0 - ULTIMATE</title>
+    <title>VISHU AI v25.0 - COMPLETE</title>
     <script src="https://www.gstatic.com/firebasejs/9.15.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.15.0/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.15.0/firebase-database-compat.js"></script>
@@ -17,49 +17,49 @@
             color: white; overflow: hidden; 
         }
 
-        .container { display: flex; flex-direction: column; height: 100vh; max-width: 480px; margin: auto; padding: 12px; }
+        .container { display: flex; flex-direction: column; height: 100vh; max-width: 480px; margin: auto; padding: 10px; }
 
-        /* 1. ENGINE MONITOR PANEL */
-        .engine-monitor {
-            display: grid; grid-template-columns: repeat(2, 1fr); gap: 6px;
-            background: rgba(0,0,0,0.3); padding: 10px; border-radius: 15px; border: 1px solid var(--border); margin-bottom: 10px;
+        /* TOP COUNTER PANEL */
+        .stats-header {
+            display: flex; justify-content: space-between; align-items: center;
+            background: rgba(0,0,0,0.4); padding: 10px 15px; border-radius: 15px;
+            border: 1px solid var(--border); margin-bottom: 8px;
         }
-        .status-item { font-size: 8px; display: flex; align-items: center; gap: 4px; color: #94a3b8; text-transform: uppercase; font-weight: bold; }
-        .dot-live { width: 5px; height: 5px; background: var(--neon); border-radius: 50%; box-shadow: 0 0 5px var(--neon); }
+        .stat-box { text-align: left; }
+        .stat-label { font-size: 8px; color: #94a3b8; text-transform: uppercase; letter-spacing: 1px; }
+        .stat-value { font-size: 12px; font-weight: 800; color: var(--neon); display: block; }
 
-        /* 2. MATCH DISPLAY PANEL */
+        /* MATCH DISPLAY */
         .match-display { 
-            background: linear-gradient(to right, rgba(99,102,241,0.1), rgba(168,85,247,0.1));
-            border: 1px solid var(--border); padding: 15px; border-radius: 20px; text-align: center; margin-bottom: 10px;
+            background: rgba(255,255,255,0.03); border: 1px solid var(--border); 
+            padding: 12px; border-radius: 20px; text-align: center; margin-bottom: 8px;
         }
-        #match-rank { font-size: 22px; font-weight: 900; display: block; color: #475569; letter-spacing: 1px; }
-        .match-found { color: var(--neon) !important; text-shadow: 0 0 15px var(--neon); }
+        #match-rank { font-size: 20px; font-weight: 900; display: block; color: #475569; }
+        .match-found { color: var(--neon) !important; text-shadow: 0 0 12px var(--neon); }
 
-        /* 3. INPUT AREA */
-        .game-card { background: var(--glass); backdrop-filter: blur(10px); border: 1px solid var(--border); border-radius: 24px; padding: 12px; }
-        .dot-row { display: flex; gap: 6px; margin-bottom: 12px; overflow-x: auto; scrollbar-width: none; padding-bottom: 5px; }
-        .dot-row::-webkit-scrollbar { display: none; }
-        .dot { min-width: 10px; height: 10px; border-radius: 50%; background: #334155; flex-shrink: 0; transition: 0.3s; }
+        /* INPUT AREA */
+        .game-card { background: var(--glass); backdrop-filter: blur(10px); border: 1px solid var(--border); border-radius: 22px; padding: 10px; }
+        .dot-row { display: flex; gap: 6px; margin-bottom: 10px; overflow-x: auto; scrollbar-width: none; padding-bottom: 5px; min-height: 15px; }
+        .dot { min-width: 10px; height: 10px; border-radius: 50%; background: #334155; flex-shrink: 0; }
         
         .planet-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px; }
         .p-btn { 
-            padding: 14px 5px; border-radius: 14px; border: 1px solid var(--border); 
+            padding: 12px 5px; border-radius: 12px; border: 1px solid var(--border); 
             background: rgba(255, 255, 255, 0.03); color: white; font-size: 11px; font-weight: 700; 
-            cursor: pointer; text-align: center; transition: 0.2s;
+            cursor: pointer; text-align: center;
         }
-        .p-btn:active { transform: scale(0.95); background: rgba(255,255,255,0.1); }
 
-        /* 4. RESULT AREA */
-        .result-panel { margin-top: 10px; padding: 15px; background: rgba(0,0,0,0.2); border-radius: 20px; border: 1px solid var(--border); text-align: center; }
-        .result-row { display: flex; justify-content: center; gap: 6px; margin-top: 10px; }
-        .p-box { flex: 1; padding: 15px 2px; border-radius: 12px; font-size: 9px; font-weight: 800; display: none; color: white; border: 1px solid rgba(255,255,255,0.1); text-transform: uppercase; }
+        /* RESULT PANEL */
+        .result-panel { margin-top: 8px; padding: 15px; background: rgba(0,0,0,0.2); border-radius: 20px; border: 1px solid var(--border); text-align: center; }
+        .result-row { display: flex; justify-content: center; gap: 6px; margin-top: 8px; }
+        .p-box { flex: 1; padding: 14px 2px; border-radius: 12px; font-size: 9px; font-weight: 800; display: none; color: white; border: 1px solid rgba(255,255,255,0.1); }
 
         .main-btn { 
             width: 100%; padding: 18px; border-radius: 20px; margin-top: auto; 
             background: linear-gradient(135deg, var(--primary), var(--secondary)); 
             color: white; border: none; font-weight: 800; font-size: 15px; cursor: pointer;
         }
-        .main-btn:disabled { opacity: 0.3; filter: grayscale(1); }
+        .main-btn:disabled { opacity: 0.3; }
 
         /* LOGIN */
         #login-screen { position: absolute; inset: 0; z-index: 1000; background: #0f172a; display: flex; align-items: center; justify-content: center; padding: 20px; }
@@ -72,38 +72,43 @@
 <div class="container">
     <div id="login-screen">
         <div class="login-card">
-            <h2 style="margin:0; background: linear-gradient(to right, #818cf8, #c084fc); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">VISHU AI</h2>
-            <p style="color: #94a3b8; font-size: 9px; letter-spacing: 2px; margin-bottom: 25px;">NEURAL NETWORK LOGIN</p>
+            <h2 style="margin:0; color: var(--secondary);">VISHU AI</h2>
+            <p style="color: #94a3b8; font-size: 9px; letter-spacing: 2px; margin-bottom: 25px;">CLOUD RECURSIVE ENGINE</p>
             <input type="email" id="email" placeholder="Access ID">
             <input type="password" id="password" placeholder="Secure Key">
-            <button class="main-btn" onclick="handleAuth()">INITIALIZE SYSTEM</button>
+            <button class="main-btn" onclick="handleAuth()">LOGIN ENGINE</button>
         </div>
     </div>
 
     <div id="app-screen" style="display: none; flex-direction: column; height: 100%;">
-        <div class="engine-monitor">
-            <div class="status-item"><div class="dot-live"></div> RECURSIVE: ON</div>
-            <div class="status-item"><div class="dot-live"></div> CLOUD SYNC: ON</div>
-            <div class="status-item"><div class="dot-live"></div> BAYESIAN: ON</div>
-            <div class="status-item"><div class="dot-live"></div> PATTERN: ON</div>
+        
+        <div class="stats-header">
+            <div class="stat-box">
+                <span class="stat-label">Cloud Database</span>
+                <span id="total-rounds-count" class="stat-value">0 ROUNDS</span>
+            </div>
+            <div class="stat-box" style="text-align: right;">
+                <span class="stat-label">Engine Status</span>
+                <span class="stat-value" style="color: #39ff14;">ACTIVE</span>
+            </div>
         </div>
 
         <div class="match-display">
-            <span style="font-size: 9px; color: #94a3b8; letter-spacing: 1px;">MATCHING DEPTH (100-1)</span>
-            <span id="match-rank">SYSTEM READY</span>
+            <span style="font-size: 9px; color: #94a3b8; letter-spacing: 1px;">SEQUENCE MATCH DEPTH</span>
+            <span id="match-rank">AWAITING INPUT</span>
         </div>
 
         <div class="game-card">
             <div class="dot-row" id="dot-display"></div>
             <div class="planet-grid">
-                <button class="p-btn" style="border-left: 3px solid #39ff14" onclick="addData('GREEN X5', '#39ff14')">GREEN X5</button>
-                <button class="p-btn" style="border-left: 3px solid #bc13fe" onclick="addData('PURPLE X5', '#bc13fe')">PURPLE X5</button>
-                <button class="p-btn" style="border-left: 3px solid #ffff00" onclick="addData('YELLOW X5', '#ffff00')">YELLOW X5</button>
-                <button class="p-btn" style="border-left: 3px solid #90ee90" onclick="addData('LT GREEN X5', '#90ee90')">LT GREEN X5</button>
-                <button class="p-btn" style="border-left: 3px solid #ff4d4d" onclick="addData('BIG X10', '#ff4d4d')">BIG X10</button>
-                <button class="p-btn" style="border-left: 3px solid #ff8c00" onclick="addData('BIG X15', '#ff8c00')">BIG X15</button>
-                <button class="p-btn" style="border-left: 3px solid #00ffff" onclick="addData('BIG X25', '#00ffff')">BIG X25</button>
-                <button class="p-btn" style="border-left: 3px solid #ff00ff" onclick="addData('BIG X50', '#ff00ff')">BIG X50</button>
+                <button class="p-btn" onclick="addData('GREEN X5', '#39ff14')">GREEN X5</button>
+                <button class="p-btn" onclick="addData('PURPLE X5', '#bc13fe')">PURPLE X5</button>
+                <button class="p-btn" onclick="addData('YELLOW X5', '#ffff00')">YELLOW X5</button>
+                <button class="p-btn" onclick="addData('LIGHT GREEN X5', '#90ee90')">LT GREEN X5</button>
+                <button class="p-btn" onclick="addData('BIG X10', '#ff4d4d')">BIG X10</button>
+                <button class="p-btn" onclick="addData('BIG X15', '#ff8c00')">BIG X15</button>
+                <button class="p-btn" onclick="addData('BIG X25', '#00ffff')">BIG X25</button>
+                <button class="p-btn" onclick="addData('BIG X50', '#ff00ff')">BIG X50</button>
                 <button class="p-btn" style="background:#1e293b" onclick="undoLast()">UNDO</button>
                 <button class="p-btn" style="background:#1e293b" onclick="resetData()">PURGE</button>
             </div>
@@ -138,9 +143,15 @@
     let userInput = []; 
     let cloudHistory = []; 
 
-    function loadHistory() {
-        db.ref('global_history').limitToLast(1500).on('value', (snap) => {
-            if(snap.exists()) cloudHistory = Object.values(snap.val());
+    // Function to update global round count
+    function syncCloudStats() {
+        db.ref('global_history').on('value', (snap) => {
+            if(snap.exists()) {
+                const data = snap.val();
+                const count = Object.keys(data).length;
+                document.getElementById('total-rounds-count').innerText = count + " ROUNDS";
+                cloudHistory = Object.values(data);
+            }
         });
     }
 
@@ -149,14 +160,14 @@
         db.ref('global_history').push(name);
         renderDots();
         document.getElementById('ai-btn').disabled = (userInput.length < 2);
-        document.getElementById('match-rank').innerText = "DATA CAPTURED";
+        document.getElementById('match-rank').innerText = "DATA SAVED";
         document.getElementById('match-rank').classList.remove('match-found');
     }
 
     function renderDots() {
         const container = document.getElementById('dot-display');
         container.innerHTML = "";
-        const colors = { 'GREEN X5': '#39ff14', 'PURPLE X5': '#bc13fe', 'YELLOW X5': '#ffff00', 'LT GREEN X5': '#90ee90', 'BIG X10': '#ff4d4d', 'BIG X15': '#ff8c00', 'BIG X25': '#00ffff', 'BIG X50': '#ff00ff' };
+        const colors = { 'GREEN X5': '#39ff14', 'PURPLE X5': '#bc13fe', 'YELLOW X5': '#ffff00', 'LIGHT GREEN X5': '#90ee90', 'BIG X10': '#ff4d4d', 'BIG X15': '#ff8c00', 'BIG X25': '#00ffff', 'BIG X50': '#ff00ff' };
         userInput.slice(-30).forEach(name => {
             const d = document.createElement('div');
             d.className = 'dot';
@@ -196,7 +207,7 @@
             rankEl.classList.add('match-found');
             showResults(nextPrediction);
         } else {
-            rankEl.innerText = "NO CLOUD MATCH";
+            rankEl.innerText = "NO MATCH";
             showResults();
         }
         btn.disabled = false;
@@ -206,7 +217,7 @@
         const boxes = [document.getElementById('p1'), document.getElementById('p2'), document.getElementById('p3')];
         const allPlanets = [
             {n: "GREEN X5", c: "#22c55e"}, {n: "PURPLE X5", c: "#a855f7"}, 
-            {n: "YELLOW X5", c: "#eab308"}, {n: "LT GREEN X5", c: "#4ade80"},
+            {n: "YELLOW X5", c: "#eab308"}, {n: "LIGHT GREEN X5", c: "#4ade80"},
             {n: "BIG X10", c: "#ef4444"}, {n: "BIG X15", c: "#f97316"}, 
             {n: "BIG X25", c: "#06b6d4"}, {n: "BIG X50", c: "#ec4899"} 
         ];
@@ -223,11 +234,11 @@
             boxes[i].style.background = `linear-gradient(135deg, ${p.c}, #000)`;
             boxes[i].style.display = 'block';
         });
-        document.getElementById('wait-msg').innerText = "PREDICTION GENERATED";
+        document.getElementById('wait-msg').innerText = "PREDICTION ACTIVE";
     }
 
     function undoLast() { userInput.pop(); renderDots(); }
-    function resetData() { userInput = []; renderDots(); document.getElementById('ai-btn').disabled = true; document.getElementById('match-rank').innerText = "SYSTEM PURGED"; }
+    function resetData() { userInput = []; renderDots(); document.getElementById('ai-btn').disabled = true; document.getElementById('match-rank').innerText = "PURGED"; }
 
     function handleAuth() {
         const email = document.getElementById('email').value;
@@ -241,7 +252,7 @@
         if (user) {
             document.getElementById('login-screen').style.display = 'none';
             document.getElementById('app-screen').style.display = 'flex';
-            loadHistory();
+            syncCloudStats();
         }
     });
 </script>
