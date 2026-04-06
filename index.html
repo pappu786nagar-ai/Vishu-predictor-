@@ -2,43 +2,69 @@
 <html>
 <head>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>VISHU SM PREDICTOR</title>
+    <title>VISHU SM PREDICTOR PRO</title>
     <script src="https://www.gstatic.com/firebasejs/9.15.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.15.0/firebase-auth-compat.js"></script>
     <style>
-        body { background: #0b0d17; color: white; font-family: sans-serif; text-align: center; padding: 20px; }
-        .input-box { width: 80%; padding: 12px; margin: 10px 0; border-radius: 8px; border: 1px solid #bc13fe; background: #1a1c2c; color: white; outline: none; }
-        .btn { width: 85%; padding: 15px; border-radius: 30px; border: none; font-weight: bold; cursor: pointer; margin-top: 10px; transition: 0.3s; }
+        body { background: #0b0d17; color: white; font-family: 'Segoe UI', sans-serif; text-align: center; padding: 20px; margin: 0; }
+        .container { max-width: 400px; margin: auto; }
+        .input-box { width: 85%; padding: 12px; margin: 10px 0; border-radius: 8px; border: 1px solid #bc13fe; background: #1a1c2c; color: white; outline: none; }
+        .btn { width: 90%; padding: 15px; border-radius: 30px; border: none; font-weight: bold; cursor: pointer; margin-top: 10px; transition: 0.3s; text-transform: uppercase; }
         .login-btn { background: #bc13fe; color: white; box-shadow: 0 0 15px #bc13fe; }
-        .login-btn:active { transform: scale(0.95); }
+        
+        /* Prediction Card */
+        .card { background: rgba(255,255,255,0.05); padding: 25px; border-radius: 20px; border: 1px solid rgba(188, 19, 254, 0.3); margin-top: 20px; box-shadow: inset 0 0 20px rgba(0,0,0,0.5); }
+        #result { font-size: 38px; font-weight: 900; margin: 15px 0; text-shadow: 0 0 10px currentColor; }
+        
+        /* History Section */
+        .history-box { margin-top: 25px; background: rgba(0,0,0,0.3); padding: 15px; border-radius: 15px; text-align: left; }
+        .history-title { font-size: 14px; color: #888; margin-bottom: 10px; border-bottom: 1px solid #333; padding-bottom: 5px; }
+        .hist-item { display: inline-block; padding: 5px 12px; margin: 4px; border-radius: 5px; font-size: 12px; font-weight: bold; }
+        
         #app-screen { display: none; }
+        .loader { border: 3px solid #f3f3f3; border-top: 3px solid #bc13fe; border-radius: 50%; width: 20px; height: 20px; animation: spin 1s linear infinite; display: inline-block; vertical-align: middle; margin-right: 10px; }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
     </style>
 </head>
 <body>
 
+<div class="container">
     <div id="login-screen">
-        <h1 style="color: #bc13fe;">VISHU PREDICTOR</h1>
-        <p style="font-size: 14px; color: #aaa;">Enter any Email & Password to Start</p>
-        <input type="email" id="email" class="input-box" placeholder="Email (e.g. test@vishu.com)">
-        <input type="password" id="password" class="input-box" placeholder="Password (min 6 chars)">
-        <button class="btn login-btn" onclick="login()">LOGIN / REGISTER</button>
-        <p id="msg" style="font-size: 12px; color: #ff4d4d; margin-top: 15px;"></p>
+        <h1 style="color: #bc13fe; letter-spacing: 2px;">VISHU AI v2.0</h1>
+        <input type="email" id="email" class="input-box" placeholder="Registered Email">
+        <input type="password" id="password" class="input-box" placeholder="Password">
+        <button class="btn login-btn" onclick="login()">ENTER SERVER</button>
+        <p id="msg" style="color: #ff4d4d; font-size: 13px;"></p>
     </div>
 
     <div id="app-screen">
-        <h3 style="color: #bc13fe;">Welcome To Vishu AI</h3>
-        <div style="background: rgba(255,255,255,0.1); padding: 30px; border-radius: 15px; border: 1px solid rgba(188, 19, 254, 0.3);">
-            <p style="color: #aaa;">Next Prediction:</p>
-            <h2 id="result" style="color: #39ff14; font-size: 35px; text-shadow: 0 0 10px #39ff14;">WAITING...</h2>
+        <h2 style="color: #bc13fe; margin-bottom: 5px;">VISHU PREDICTOR</h2>
+        <p style="font-size: 10px; color: #39ff14; margin-top: 0;">● SERVER CONNECTED</p>
+        
+        <div class="card">
+            <p style="color: #888; font-size: 14px;">PROBABILITY RESULT</p>
+            <h2 id="result" style="color: #555;">READY</h2>
+            <div id="loading-ui" style="display:none;"><div class="loader"></div><span style="font-size:12px;">SCANNING DATA...</span></div>
         </div>
+
+        <button class="btn login-btn" id="scan-btn" onclick="predict()">START DEEP SCAN</button>
+
+        <div class="history-box">
+            <div class="history-title">RECENT PATTERNS (LAST 5)</div>
+            <div id="history-list">
+                <span style="color:gray; font-size:12px;">No data yet...</span>
+            </div>
+        </div>
+
         <br>
-        <button class="btn login-btn" onclick="predict()">START DEEP SCAN</button>
-        <br><br>
-        <button style="background:none; color:gray; border:none; cursor:pointer;" onclick="logout()">Logout Account</button>
+        <button style="background:none; color:gray; border:none; font-size: 12px;" onclick="logout()">LOGOUT</button>
     </div>
+</div>
+
+<audio id="scanSound" src="https://www.soundjay.com/buttons/sounds/button-20.mp3"></audio>
 
 <script>
-    // --- FIXED FIREBASE CONFIGURATION ---
+    // --- APNI FIREBASE CONFIG DALEIN ---
     const firebaseConfig = {
         apiKey: "AIzaSyCiKUh0v9GG3svQROdEF2FSg-Yf0y7D240",
         authDomain: "vishu-sm-predictor-e760b.firebaseapp.com",
@@ -47,38 +73,16 @@
         messagingSenderId: "990041638587",
         appId: "1:990041638587:web:1697860df62882ebe58b9e"
     };
-    
-    // Initialize Firebase
     firebase.initializeApp(firebaseConfig);
 
-    // Login & Register Logic
+    let history = [];
+
     function login() {
         const email = document.getElementById('email').value;
         const pass = document.getElementById('password').value;
-        const msg = document.getElementById('msg');
-
-        if(email == "" || pass == "") {
-            msg.innerText = "Please fill all fields!";
-            return;
-        }
-
-        msg.innerText = "Connecting to Server...";
-
-        // Try to Login
         firebase.auth().signInWithEmailAndPassword(email, pass)
-        .then(() => { 
-            showApp(); 
-        })
-        .catch((error) => {
-            // If user doesn't exist, Register them automatically
-            if (error.code === 'auth/user-not-found') {
-                firebase.auth().createUserWithEmailAndPassword(email, pass)
-                .then(() => { showApp(); })
-                .catch((err) => { msg.innerText = "Error: " + err.message; });
-            } else {
-                msg.innerText = "Error: " + error.message;
-            }
-        });
+        .then(() => { showApp(); })
+        .catch((err) => { document.getElementById('msg').innerText = "Login Failed!"; });
     }
 
     function showApp() {
@@ -86,32 +90,52 @@
         document.getElementById('app-screen').style.display = 'block';
     }
 
+    // Feature 3: Smart Prediction Logic
     function predict() {
-        const list = ["PURPLE", "GREEN", "YELLOW", "L-GREEN"];
-        const resultText = document.getElementById('result');
-        resultText.innerText = "SCANNING DATABASE...";
-        resultText.style.color = "white";
+        const scanBtn = document.getElementById('scan-btn');
+        const resText = document.getElementById('result');
+        const loadUI = document.getElementById('loading-ui');
+        const sound = document.getElementById('scanSound');
+
+        scanBtn.disabled = true;
+        resText.style.display = 'none';
+        loadUI.style.display = 'block';
+        sound.play(); // Play Sound
 
         setTimeout(() => {
-            const final = list[Math.floor(Math.random() * list.length)];
-            resultText.innerText = final;
+            loadUI.style.display = 'none';
+            resText.style.display = 'block';
             
-            // Color changing logic
-            if(final == "PURPLE") resultText.style.color = "#bc13fe";
-            else if(final == "GREEN") resultText.style.color = "#39ff14";
-            else if(final == "YELLOW") resultText.style.color = "#ffff00";
-            else resultText.style.color = "#90ee90";
-        }, 1500);
+            // Logic: Random but feels professional
+            const colors = [
+                {name: "PURPLE", hex: "#bc13fe"},
+                {name: "GREEN", hex: "#39ff14"},
+                {name: "YELLOW", hex: "#ffff00"},
+                {name: "L-GREEN", hex: "#90ee90"}
+            ];
+            
+            const pick = colors[Math.floor(Math.random() * colors.length)];
+            resText.innerText = pick.name;
+            resText.style.color = pick.hex;
+
+            updateHistory(pick);
+            scanBtn.disabled = false;
+        }, 2000);
     }
 
-    function logout() { 
-        firebase.auth().signOut().then(() => { location.reload(); }); 
+    function updateHistory(item) {
+        history.unshift(item); // Add to start
+        if(history.length > 5) history.pop(); // Keep only 5
+
+        const histDiv = document.getElementById('history-list');
+        histDiv.innerHTML = "";
+        history.forEach(h => {
+            histDiv.innerHTML += `<span class="hist-item" style="background:${h.hex}; color:black;">${h.name}</span>`;
+        });
     }
-    
-    // Auto-login if session exists
-    firebase.auth().onAuthStateChanged(user => { 
-        if(user) showApp(); 
-    });
+
+    function logout() { firebase.auth().signOut().then(() => { location.reload(); }); }
+    firebase.auth().onAuthStateChanged(user => { if(user) showApp(); });
 </script>
 </body>
 </html>
