@@ -3,74 +3,80 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>VISHU AI - CYBERNETIC BRAIN v17.0</title>
+    <title>VISHU AI v22.0 - SEQUENCE MATCH</title>
     <script src="https://www.gstatic.com/firebasejs/9.15.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.15.0/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.15.0/firebase-database-compat.js"></script>
     <style>
-        :root { --purple: #bc13fe; --neon: #39ff14; --dark: #020202; --text: #d5d5d5; }
-        * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; font-family: 'Courier New', Courier, monospace; }
-        html, body { height: 100%; margin: 0; padding: 0; background: var(--dark); color: var(--text); overflow: hidden; }
-        body { background-image: linear-gradient(rgba(188, 19, 254, 0.05) 1px, transparent 1px), linear-gradient(90deg, rgba(188, 19, 254, 0.05) 1px, transparent 1px); background-size: 20px 20px; }
-        .container { display: flex; flex-direction: column; height: 100vh; padding: 15px; max-width: 500px; margin: auto; position: relative; }
-        #login-screen, #app-screen { flex: 1; display: flex; flex-direction: column; justify-content: center; z-index: 10; }
-        #app-screen { display: none; justify-content: flex-start; padding-top: 10px; overflow-y: auto; }
-        .stats-header { border: 2px solid var(--purple); padding: 10px; border-radius: 5px; margin-bottom: 10px; background: rgba(0,0,0,0.8); box-shadow: 0 0 10px var(--purple); font-size: 10px; text-transform: uppercase; }
-        #data-counter { color: var(--neon); font-size: 18px; font-weight: bold; }
-        .dot-row { display: flex; justify-content: center; gap: 8px; margin-bottom: 15px; border-top: 1px solid #333; padding-top: 10px; }
-        .dot { width: 14px; height: 14px; border-radius: 2px; background: #111; border: 2px solid #333; transition: 0.3s; }
-        .planet-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px; margin-bottom: 15px; }
-        .p-btn { padding: 12px 5px; border-radius: 5px; border: 1px solid #444; font-size: 11px; font-weight: bold; color: white; cursor: pointer; background: rgba(0,0,0,0.6); text-transform: uppercase; letter-spacing: 1px; }
-        .p-btn:active { transform: scale(0.95); }
-        .engine-box { background: rgba(0,0,0,0.9); border: 2px solid var(--neon); border-radius: 10px; padding: 15px; margin-bottom: 10px; box-shadow: 0 0 15px var(--neon); }
-        .pred-row { display: flex; justify-content: space-around; gap: 5px; }
-        .p-box { flex: 1; padding: 10px 2px; border-radius: 5px; font-size: 9px; font-weight: bold; display: none; text-align: center; border: 1px solid #444; text-transform: uppercase; }
-        .main-btn { width: 100%; padding: 18px; border-radius: 5px; background: rgba(188, 19, 254, 0.2); color: white; border: 2px solid var(--purple); font-weight: bold; font-size: 15px; cursor: pointer; text-transform: uppercase; letter-spacing: 2px; margin-bottom: 10px; }
-        .main-btn:disabled { border-color: #333; color: #444; }
-        .history-box { background: rgba(0,0,0,0.8); border: 1px solid #333; border-radius: 5px; padding: 10px; font-size: 10px; text-align: left; max-height: 150px; overflow-y: auto; margin-top: 10px; }
-        .log-item { border-bottom: 1px solid #222; padding: 5px 0; display: flex; justify-content: space-between; }
-        input { width: 100%; padding: 15px; margin-bottom: 10px; border-radius: 5px; background: rgba(0,0,0,0.6); color: white; border: 1px solid #444; outline: none; }
+        :root { --primary: #6366f1; --secondary: #a855f7; --neon: #39ff14; --glass: rgba(255, 255, 255, 0.05); --border: rgba(255, 255, 255, 0.1); }
+        * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; font-family: 'Inter', sans-serif; }
+        body { height: 100vh; margin: 0; background: radial-gradient(circle at top right, #1e1b4b, #0f172a); color: white; overflow: hidden; }
+        .container { display: flex; flex-direction: column; height: 100vh; max-width: 480px; margin: auto; padding: 15px; }
+        
+        /* High-Visibility Match Display */
+        .match-status-box { 
+            background: rgba(0,0,0,0.5); border: 2px solid var(--border); 
+            padding: 15px; border-radius: 24px; margin-bottom: 12px; 
+            text-align: center; position: relative; overflow: hidden;
+        }
+        .match-label { font-size: 10px; color: #94a3b8; letter-spacing: 2px; text-transform: uppercase; }
+        #match-rank { font-size: 24px; font-weight: 900; display: block; margin-top: 5px; transition: 0.3s; color: #475569; }
+        .match-found { color: var(--neon) !important; text-shadow: 0 0 15px var(--neon); }
+
+        .planet-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; margin-bottom: 10px; }
+        .p-btn { padding: 14px; border-radius: 16px; border: 1px solid var(--border); background: rgba(255, 255, 255, 0.03); color: white; font-size: 12px; font-weight: 700; cursor: pointer; }
+        .p-btn:active { transform: scale(0.95); background: rgba(255,255,255,0.1); }
+
+        .pred-display { margin-top: auto; padding: 25px 15px; background: rgba(255,255,255,0.02); border-radius: 24px; border: 1px solid var(--border); text-align: center; }
+        .pred-row { display: flex; justify-content: space-around; gap: 8px; margin-top: 15px; }
+        .p-box { flex: 1; padding: 18px 5px; border-radius: 15px; font-size: 10px; font-weight: 800; display: none; color: white; border: 1px solid rgba(255,255,255,0.1); }
+
+        .main-btn { width: 100%; padding: 20px; border-radius: 20px; margin-top: 15px; background: linear-gradient(135deg, var(--primary), var(--secondary)); color: white; border: none; font-weight: 800; font-size: 16px; cursor: pointer; box-shadow: 0 8px 20px rgba(99,102,241,0.3); }
+        .main-btn:disabled { opacity: 0.3; filter: grayscale(1); }
+        
+        .dot-row { display: flex; justify-content: center; gap: 6px; margin-bottom: 15px; padding: 5px; overflow-x: auto; }
+        .dot { min-width: 10px; height: 10px; border-radius: 50%; background: #334155; transition: 0.4s; }
+        input { width: 100%; padding: 16px; margin-bottom: 12px; border-radius: 16px; background: rgba(255,255,255,0.05); border: 1px solid var(--border); color: white; outline: none; }
     </style>
 </head>
 <body>
 
 <div class="container">
-    <div id="login-screen">
-        <h1 style="color:var(--purple); font-size: 36px; text-shadow: 0 0 10px var(--purple);">VISHU AI</h1>
-        <p style="color:#666; font-size: 10px; margin-bottom: 30px;">NEURAL ACCESS PROTOCOL v17.0</p>
-        <input type="email" id="email" placeholder="NEURAL_ID@HOST.COM">
-        <input type="password" id="password" placeholder="ACCESS_KEY">
-        <button class="main-btn" onclick="handleAuth()">ACTIVATE INTERFACE</button>
+    <div id="login-screen" style="justify-content: center; display: flex; flex-direction: column; height:100%;">
+        <div style="background: var(--glass); padding: 25px; border-radius: 24px; text-align: center; border: 1px solid var(--border);">
+            <h2 style="margin:0; font-size: 28px; background: linear-gradient(to right, #818cf8, #c084fc); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">VISHU AI v22.0</h2>
+            <p style="color: #94a3b8; font-size: 10px; margin-bottom: 30px;">SEQUENCE MATCHING ENGINE</p>
+            <input type="email" id="email" placeholder="User Email">
+            <input type="password" id="password" placeholder="Access Key">
+            <button class="main-btn" onclick="handleAuth()">LOGIN ENGINE</button>
+        </div>
     </div>
 
-    <div id="app-screen">
-        <div class="stats-header">
-            <div style="display:flex; justify-content:space-between;">
-                <span>CORE: <span style="color:var(--neon)">ONLINE</span></span>
-                <span>SYNC: <span id="data-counter">0</span></span>
+    <div id="app-screen" style="display: none;">
+        <div class="match-status-box">
+            <div class="match-label">Sequence Search Results</div>
+            <span id="match-rank">Awaiting Rounds</span>
+        </div>
+
+        <div style="background: var(--glass); padding: 15px; border-radius: 24px; border: 1px solid var(--border);">
+            <div class="dot-row" id="dot-display"></div>
+
+            <div class="planet-grid">
+                <button class="p-btn" onclick="addData('GREEN X5', '#39ff14')">GREEN X5</button>
+                <button class="p-btn" onclick="addData('PURPLE X5', '#bc13fe')">PURPLE X5</button>
+                <button class="p-btn" onclick="addData('YELLOW X5', '#ffff00')">YELLOW X5</button>
+                <button class="p-btn" onclick="addData('LIGHT GREEN X5', '#90ee90')">LT GREEN X5</button>
+                <button class="p-btn" onclick="addData('BIG X10', '#ff4d4d')">BIG X10</button>
+                <button class="p-btn" onclick="addData('BIG X15', '#ff8c00')">BIG X15</button>
+                <button class="p-btn" onclick="addData('BIG X25', '#00ffff')">BIG X25</button>
+                <button class="p-btn" onclick="addData('BIG X50', '#ff00ff')">BIG X50</button>
+                <button class="p-btn" style="background:#1e293b" onclick="undoLast()">UNDO</button>
+                <button class="p-btn" style="background:#1e293b" onclick="resetData()">PURGE</button>
             </div>
         </div>
 
-        <div class="dot-row" id="dot-display">
-            <div class="dot"></div><div class="dot"></div><div class="dot"></div><div class="dot"></div>
-            <div class="dot"></div><div class="dot"></div><div class="dot"></div><div class="dot"></div>
-        </div>
-
-        <div class="planet-grid">
-            <button class="p-btn" style="border-color:#bc13fe; color:#bc13fe;" onclick="btnAction('EARTH PURPLE X5', '#bc13fe')">EARTH PURPLE (X5)</button>
-            <button class="p-btn" style="border-color:#39ff14; color:#39ff14;" onclick="btnAction('MARS GREEN X5', '#39ff14')">MARS GREEN (X5)</button>
-            <button class="p-btn" style="border-color:#ffff00; color:#ffff00;" onclick="btnAction('SATURN YELLOW X5', '#ffff00')">SATURN YELLOW (X5)</button>
-            <button class="p-btn" style="border-color:#90ee90; color:#90ee90;" onclick="btnAction('VENUS L-GREEN X5', '#90ee90')">VENUS L-GREEN (X5)</button>
-            <button class="p-btn" style="border-color:#ff4d4d; color:#ff4d4d;" onclick="btnAction('MOON X10', '#ff4d4d')">MOON (X10)</button>
-            <button class="p-btn" style="border-color:#ff8c00; color:#ff8c00;" onclick="btnAction('JUPITER X15', '#ff8c00')">JUPITER (X15)</button>
-            <button class="p-btn" style="border-color:#00ffff; color:#00ffff;" onclick="btnAction('SUN X25', '#00ffff')">SUN (X25)</button>
-            <button class="p-btn" style="border-color:#ff00ff; color:#ff00ff;" onclick="btnAction('STAR X50', '#ff00ff')">STAR (X50)</button>
-            <button class="p-btn" style="background:#333; grid-column: span 1;" onclick="undoLast()">REVERT</button>
-            <button class="p-btn" style="background:#111; grid-column: span 1;" onclick="resetData()">PURGE</button>
-        </div>
-
-        <div class="engine-box">
-            <div id="wait-msg" style="color:#444; font-size: 10px;">[ AWAITING NEURAL INPUT ]</div>
+        <div class="pred-display">
+            <div id="wait-msg" style="font-size: 11px; color: #64748b; text-transform: uppercase;">Engine Idle</div>
             <div class="pred-row">
                 <div id="p1" class="p-box"></div>
                 <div id="p2" class="p-box"></div>
@@ -78,12 +84,7 @@
             </div>
         </div>
 
-        <button class="main-btn" id="ai-btn" onclick="deepScan()" disabled>EXECUTE SCAN</button>
-
-        <div class="history-box" id="history-log">
-            <div style="color:var(--purple); border-bottom:1px solid #444; margin-bottom:5px; font-weight:bold;">CLOUD RECOVERY LOGS:</div>
-            <div id="log-content">No data synced.</div>
-        </div>
+        <button class="main-btn" id="ai-btn" onclick="executeInfiniteScan()" disabled>START RECURSIVE MATCH</button>
     </div>
 </div>
 
@@ -99,80 +100,110 @@
     firebase.initializeApp(firebaseConfig);
     const auth = firebase.auth();
     const db = firebase.database();
-    let userInput = [];
+    
+    let userInput = []; 
+    let cloudHistory = []; 
 
-    const planets = [
-        {n: "EARTH PURPLE X5", c: "#bc13fe"}, {n: "MARS GREEN X5", c: "#39ff14"}, 
-        {n: "SATURN YELLOW X5", c: "#ffff00"}, {n: "VENUS L-GREEN X5", c: "#90ee90"},
-        {n: "MOON X10", c: "#ff4d4d"}, {n: "JUPITER X15", c: "#ff8c00"}, 
-        {n: "SUN X25", c: "#00ffff"}, {n: "STAR X50", c: "#ff00ff"} 
-    ];
-
-    function btnAction(name, color) { addData(name, color); }
+    function loadHistory() {
+        db.ref('global_history').limitToLast(1500).on('value', (snap) => {
+            if(snap.exists()) cloudHistory = Object.values(snap.val());
+        });
+    }
 
     function addData(name, color) {
-        if(userInput.length >= 8) userInput.shift();
-        userInput.push({name, color});
+        userInput.push(name);
+        db.ref('global_history').push(name);
         renderDots();
-        document.getElementById('ai-btn').disabled = (userInput.length < 8);
+        document.getElementById('ai-btn').disabled = (userInput.length < 2);
+        document.getElementById('match-rank').innerText = "Rounds In: " + userInput.length;
+        document.getElementById('match-rank').classList.remove('match-found');
     }
 
     function renderDots() {
-        const dots = document.querySelectorAll('.dot');
-        dots.forEach((d, i) => {
-            d.style.background = userInput[i] ? userInput[i].color : "#111";
-            d.style.borderColor = userInput[i] ? userInput[i].color : "#333";
+        const container = document.getElementById('dot-display');
+        container.innerHTML = "";
+        const colors = { 'GREEN X5': '#39ff14', 'PURPLE X5': '#bc13fe', 'YELLOW X5': '#ffff00', 'LIGHT GREEN X5': '#90ee90', 'BIG X10': '#ff4d4d', 'BIG X15': '#ff8c00', 'BIG X25': '#00ffff', 'BIG X50': '#ff00ff' };
+        userInput.slice(-15).forEach(name => {
+            const d = document.createElement('div');
+            d.className = 'dot';
+            d.style.background = colors[name];
+            d.style.boxShadow = `0 0 8px ${colors[name]}`;
+            container.appendChild(d);
         });
     }
 
-    function deepScan() {
+    // --- RECURSIVE MATCH LOGIC ---
+    async function executeInfiniteScan() {
+        const rankEl = document.getElementById('match-rank');
         const btn = document.getElementById('ai-btn');
         btn.disabled = true;
-        document.getElementById('wait-msg').innerText = "CALCULATING PROBABILITY...";
+        
+        let foundMatch = false;
+        let nextPrediction = "";
+        let bestSize = 0;
 
-        setTimeout(() => {
-            document.getElementById('wait-msg').style.display = 'none';
-            let picks = [...planets].sort(() => 0.5 - Math.random()).slice(0, 3);
-            let pNames = [];
-            picks.forEach((p, i) => {
-                const box = document.getElementById('p' + (i+1));
-                box.innerHTML = p.n.replace(" X", "<br>X");
-                box.style.background = p.c;
-                box.style.display = 'block';
-                box.style.color = ['#39ff14', '#ffff00', '#90ee90', '#00ffff'].includes(p.c) ? 'black' : 'white';
-                pNames.push(p.n);
-            });
-            saveLog(pNames);
-            db.ref('global_stats/total_scans').transaction(c => (c || 0) + 1);
-            btn.disabled = false;
-        }, 1000);
-    }
+        // Sequence starts from 100 or current total rounds, down to 1
+        let maxDepth = Math.min(userInput.length, 100);
 
-    function saveLog(preds) {
-        const user = auth.currentUser;
-        if(user) {
-            const ref = db.ref('logs/' + user.uid).push();
-            ref.set({ predictions: preds, time: new Date().toLocaleTimeString() });
+        for (let size = maxDepth; size >= 1; size--) {
+            // Live Update: dikhayega ki kaunsa sequence AI check kar raha hai
+            rankEl.innerText = `SCANNING: ${size} RDS`;
+            rankEl.style.color = "#818cf8";
+            
+            await new Promise(r => setTimeout(r, 20)); // Scanning feel
+
+            const currentPattern = userInput.slice(-size).join('|');
+
+            for (let i = 0; i < cloudHistory.length - size; i++) {
+                const historyPattern = cloudHistory.slice(i, i + size).join('|');
+                if (currentPattern === historyPattern) {
+                    nextPrediction = cloudHistory[i + size];
+                    bestSize = size;
+                    foundMatch = true;
+                    break;
+                }
+            }
+            if (foundMatch) break;
         }
+
+        if (foundMatch) {
+            rankEl.innerText = `FOUND: ${bestSize} RDS`;
+            rankEl.classList.add('match-found');
+            showResults(nextPrediction);
+        } else {
+            rankEl.innerText = "NO MATCH FOUND";
+            rankEl.style.color = "#ef4444";
+            showResults();
+        }
+        btn.disabled = false;
     }
 
-    function syncLogs() {
-        const user = auth.currentUser;
-        db.ref('logs/' + user.uid).limitToLast(5).on('value', snap => {
-            const container = document.getElementById('log-content');
-            container.innerHTML = "";
-            snap.forEach(child => {
-                const data = child.val();
-                container.innerHTML += `<div class="log-item">
-                    <span>${data.predictions[0]}</span>
-                    <span style="color:#555;">${data.time}</span>
-                </div>`;
-            });
+    function showResults(match) {
+        const boxes = [document.getElementById('p1'), document.getElementById('p2'), document.getElementById('p3')];
+        const allPlanets = [
+            {n: "GREEN X5", c: "#22c55e"}, {n: "PURPLE X5", c: "#a855f7"}, 
+            {n: "YELLOW X5", c: "#eab308"}, {n: "LIGHT GREEN X5", c: "#4ade80"},
+            {n: "BIG X10", c: "#ef4444"}, {n: "BIG X15", c: "#f97316"}, 
+            {n: "BIG X25", c: "#06b6d4"}, {n: "BIG X50", c: "#ec4899"} 
+        ];
+
+        let picks = [];
+        if(match) picks.push(allPlanets.find(p => p.n === match));
+        while(picks.length < 3) {
+            let r = allPlanets[Math.floor(Math.random() * allPlanets.length)];
+            if(!picks.includes(r)) picks.push(r);
+        }
+
+        picks.forEach((p, i) => {
+            boxes[i].innerHTML = p.n.replace(" ", "<br>");
+            boxes[i].style.background = `linear-gradient(135deg, ${p.c}, #000)`;
+            boxes[i].style.display = 'block';
         });
+        document.getElementById('wait-msg').innerText = "Prediction Decoded";
     }
 
-    function undoLast() { userInput.pop(); renderDots(); document.getElementById('ai-btn').disabled = true; }
-    function resetData() { userInput = []; renderDots(); document.getElementById('ai-btn').disabled = true; }
+    function undoLast() { userInput.pop(); renderDots(); }
+    function resetData() { userInput = []; renderDots(); document.getElementById('ai-btn').disabled = true; document.getElementById('match-rank').innerText = "Awaiting Rounds"; }
 
     function handleAuth() {
         const email = document.getElementById('email').value;
@@ -185,9 +216,8 @@
     auth.onAuthStateChanged(user => {
         if (user) {
             document.getElementById('login-screen').style.display = 'none';
-            document.getElementById('app-screen').style.display = 'block';
-            syncLogs();
-            db.ref('global_stats/total_scans').on('value', s => document.getElementById('data-counter').innerText = s.val() || 0);
+            document.getElementById('app-screen').style.display = 'flex';
+            loadHistory();
         }
     });
 </script>
