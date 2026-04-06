@@ -2,70 +2,92 @@
 <html>
 <head>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>VISHU AI PATTERN LOGIC</title>
+    <title>VISHU AI ULTIMATE v10.0</title>
     <script src="https://www.gstatic.com/firebasejs/9.15.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.15.0/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.15.0/firebase-database-compat.js"></script>
     <style>
-        body { background: #05070a; color: white; font-family: 'Segoe UI', sans-serif; text-align: center; padding: 15px; margin: 0; }
+        body { background: #05070a; color: white; font-family: sans-serif; text-align: center; padding: 10px; margin: 0; }
         .container { max-width: 450px; margin: auto; }
-        .btn { width: 90%; padding: 15px; border-radius: 35px; border: none; font-weight: bold; cursor: pointer; margin-top: 10px; transition: 0.3s; }
-        .purple-btn { background: #bc13fe; color: white; box-shadow: 0 0 15px #bc13fe; }
         
-        /* Logic Reason Box */
-        .reason-box { background: rgba(57, 255, 20, 0.05); border: 1px dashed #39ff14; color: #39ff14; padding: 10px; border-radius: 10px; font-size: 11px; margin-bottom: 15px; display: none; text-transform: uppercase; letter-spacing: 1px; }
+        /* FEATURE: Online Counter Box */
+        .stats-header { background: rgba(57, 255, 20, 0.1); border: 1px solid #39ff14; padding: 10px; border-radius: 12px; margin-bottom: 10px; display: flex; justify-content: space-between; align-items: center; }
+        #data-counter { color: #39ff14; font-weight: bold; font-size: 18px; }
 
-        .prediction-area { background: rgba(188, 19, 254, 0.05); border: 1px solid #bc13fe; border-radius: 20px; padding: 20px; margin: 15px 0; position: relative; }
-        .next-box { display: flex; justify-content: space-around; margin-top: 15px; gap: 5px; }
-        .pred-item { padding: 12px 5px; border-radius: 10px; font-weight: bold; font-size: 10px; width: 32%; box-shadow: 0 4px 10px rgba(0,0,0,0.5); }
+        /* History Dots */
+        .dot-row { display: flex; justify-content: center; gap: 5px; margin: 15px 0; }
+        .dot { width: 12px; height: 12px; border-radius: 50%; background: #222; }
+
+        /* Planet Grid */
+        .planet-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; margin-bottom: 15px; }
+        .p-btn { padding: 12px 2px; border-radius: 8px; border: 1px solid #333; font-size: 9px; font-weight: bold; color: white; cursor: pointer; }
+
+        /* Prediction Area & Reason */
+        .engine-box { background: rgba(188, 19, 254, 0.05); border: 1px solid #bc13fe; border-radius: 20px; padding: 15px; margin: 10px 0; }
+        .reason-line { color: #39ff14; font-size: 10px; border: 1px dashed #39ff14; padding: 5px; border-radius: 5px; margin-bottom: 10px; display: none; text-transform: uppercase; }
         
-        .planet-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; margin: 15px 0; }
-        .p-btn { padding: 10px 2px; border-radius: 8px; border: 1px solid #444; font-size: 9px; font-weight: bold; cursor: pointer; color: white; }
-        #app-screen { display: none; }
+        .pred-row { display: flex; justify-content: space-around; gap: 5px; }
+        .p-box { flex: 1; padding: 10px 2px; border-radius: 10px; font-size: 10px; font-weight: bold; display: none; }
+
+        .main-btn { width: 100%; padding: 18px; border-radius: 35px; background: #bc13fe; color: white; border: none; font-weight: bold; font-size: 16px; box-shadow: 0 0 20px #bc13fe; cursor: pointer; }
+        .main-btn:disabled { background: #444; box-shadow: none; }
+
+        /* FEATURE: Cloud Recovery Logs */
+        .cloud-logs { margin-top: 20px; background: #111; border-radius: 10px; padding: 10px; text-align: left; max-height: 150px; overflow-y: auto; font-size: 11px; }
     </style>
 </head>
 <body>
 
-<div class="container">
-    <div id="login-screen">
-        <h1 style="color: #bc13fe;">VISHU AI LOGIC</h1>
-        <input type="email" id="email" style="width:80%; padding:12px; margin:10px; border-radius:8px; background:#1a1c2c; color:white; border:1px solid #bc13fe;" placeholder="Email">
-        <input type="password" id="password" style="width:80%; padding:12px; margin:10px; border-radius:8px; background:#1a1c2c; color:white; border:1px solid #bc13fe;" placeholder="Password">
-        <button class="btn purple-btn" onclick="login()">CONNECT ENGINE</button>
+<div class="container" id="app-screen" style="display:none;">
+    <div class="stats-header">
+        <span style="font-size:10px;">GLOBAL SCANS SAVED:</span>
+        <span id="data-counter">0</span>
     </div>
 
-    <div id="app-screen">
-        <div id="input-display" style="display:flex; justify-content:center; gap:5px; margin-bottom:15px;"></div>
+    <div class="dot-row" id="dot-display">
+        <div class="dot"></div><div class="dot"></div><div class="dot"></div><div class="dot"></div>
+        <div class="dot"></div><div class="dot"></div><div class="dot"></div><div class="dot"></div>
+    </div>
 
-        <div class="planet-grid">
-            <button class="p-btn" style="background:#bc13fe" onclick="addData('PURPLE X5', '#bc13fe')">P-X5</button>
-            <button class="p-btn" style="background:#39ff14; color:black;" onclick="addData('GREEN X5', '#39ff14')">G-X5</button>
-            <button class="p-btn" style="background:#ffff00; color:black;" onclick="addData('YELLOW X5', '#ffff00')">Y-X5</button>
-            <button class="p-btn" style="background:#90ee90; color:black;" onclick="addData('L-GREEN X5', '#90ee90')">LG-X5</button>
-            <button class="p-btn" style="background:#1a1c2c; border:1px solid #ff4d4d" onclick="addData('BIG X10', '#ff4d4d')">X10</button>
-            <button class="p-btn" style="background:#1a1c2c; border:1px solid #ff4d4d" onclick="addData('BIG X25', '#ff4d4d')">X25</button>
-            <button class="p-btn" style="background:#1a1c2c; border:1px solid #ff4d4d" onclick="addData('BIG X50', '#ff4d4d')">X50</button>
-            <button class="p-btn" style="background:gray;" onclick="resetData()">CLEAR</button>
+    <div class="planet-grid">
+        <button class="p-btn" style="background:#bc13fe" onclick="addData('PURPLE X5', '#bc13fe')">P-X5</button>
+        <button class="p-btn" style="background:#39ff14; color:black;" onclick="addData('GREEN X5', '#39ff14')">G-X5</button>
+        <button class="p-btn" style="background:#ffff00; color:black;" onclick="addData('YELLOW X5', '#ffff00')">Y-X5</button>
+        <button class="p-btn" style="background:#90ee90; color:black;" onclick="addData('L-GREEN X5', '#90ee90')">LG-X5</button>
+        <button class="p-btn" style="background:#1a1c2c; border:1px solid #ff4d4d" onclick="addData('BIG X10', '#ff4d4d')">X10</button>
+        <button class="p-btn" style="background:#1a1c2c; border:1px solid #ff4d4d" onclick="addData('BIG X15', '#ff4d4d')">X15</button>
+        <button class="p-btn" style="background:#1a1c2c; border:1px solid #ff4d4d" onclick="addData('BIG X25', '#ff4d4d')">X25</button>
+        <button class="p-btn" style="background:#333;" onclick="resetData()">CLEAR</button>
+    </div>
+
+    <div class="engine-box">
+        <div id="reason-text" class="reason-line"></div>
+        <div id="wait-msg" style="font-size:12px; color:#666;">Enter 8 Rounds to Unlock AI</div>
+        <div class="pred-row" id="result-ui">
+            <div id="p1" class="p-box"></div>
+            <div id="p2" class="p-box"></div>
+            <div id="p3" class="p-box"></div>
         </div>
+    </div>
 
-        <div class="prediction-area">
-            <div id="reason-text" class="reason-box"></div>
-            <div id="wait-msg">Enter 8 Data Points to Analyze</div>
-            <div id="result-ui" style="display:none;">
-                <div class="next-box">
-                    <div id="p1" class="pred-item"></div>
-                    <div id="p2" class="pred-item"></div>
-                    <div id="p3" class="pred-item"></div>
-                </div>
-            </div>
-        </div>
+    <button class="main-btn" id="ai-btn" onclick="deepScan()" disabled>DEEP SCAN & CLOUD SAVE</button>
 
-        <button class="btn purple-btn" id="ai-btn" onclick="deepScan()" disabled>DEEP SCAN & ANALYZE</button>
+    <div class="cloud-logs">
+        <p style="color:#bc13fe; margin:0 0 5px 0;">RECENT CLOUD LOGS (Recovered):</p>
+        <div id="logs-list">No data found in Cloud.</div>
     </div>
 </div>
 
+<div id="login-screen" style="padding:50px 20px;">
+    <h2 style="color:#bc13fe;">VISHU LOGIN</h2>
+    <input type="email" id="email" style="width:90%; padding:12px; margin:10px; border-radius:8px;" placeholder="Email">
+    <input type="password" id="password" style="width:90%; padding:12px; margin:10px; border-radius:8px;" placeholder="Password">
+    <button class="main-btn" onclick="login()">LOGIN / SYNC</button>
+</div>
+
 <script>
-    const firebaseConfig = {
+    // Config wahi rahegi jo aapne di thi
+    const firebaseConfig = { 
         apiKey: "AIzaSyCiKUh0v9GG3svQROdEF2FSg-Yf0y7D240",
         authDomain: "vishu-sm-predictor-e760b.firebaseapp.com",
         projectId: "vishu-sm-predictor-e760b",
@@ -84,15 +106,7 @@
         {n: "BIG X10", c: "#ff4d4d"}, {n: "BIG X25", c: "#ff4d4d"}
     ];
 
-    const logicReasons = [
-        "Mirror Pattern Detected in DB",
-        "AB-AB Sequence Matched",
-        "AA-BB Pattern Probability High",
-        "AA-B-AA Sequence Identified",
-        "Repeat Pattern Sync Found",
-        "Old Sequence Match (v2.0 Logic)",
-        "Latest Server Pattern Reading"
-    ];
+    const reasons = ["Mirror Pattern", "AB-AB Sequence", "AA-BB Pattern", "AA-B-AA Sequence", "Repeat Scan"];
 
     function addData(name, color) {
         if(userInput.length >= 8) userInput.shift();
@@ -102,57 +116,76 @@
     }
 
     function renderInput() {
-        const display = document.getElementById('input-display');
-        display.innerHTML = userInput.map(i => `<div style="width:12px; height:12px; border-radius:50%; background:${i.color}"></div>`).join("");
+        const dots = document.querySelectorAll('.dot');
+        dots.forEach((d, i) => {
+            d.style.background = userInput[i] ? userInput[i].color : "#222";
+        });
     }
 
     function deepScan() {
         document.getElementById('wait-msg').style.display = 'none';
-        document.getElementById('result-ui').style.display = 'block';
         
-        // 1. Logic Selection
-        const reason = logicReasons[Math.floor(Math.random() * logicReasons.length)];
-        const rBox = document.getElementById('reason-text');
-        rBox.innerText = "Reason: " + reason;
-        rBox.style.display = 'block';
+        // 1. Logic Reason
+        const reason = reasons[Math.floor(Math.random()*reasons.length)];
+        const rEl = document.getElementById('reason-text');
+        rEl.innerText = "REASON: " + reason;
+        rEl.style.display = 'block';
 
-        // 2. Unique Prediction
+        // 2. Unique 3 Prediction
         let available = [...planets];
         let preds = [];
         for(let i=1; i<=3; i++) {
-            let idx = Math.floor(Math.random() * available.length);
+            let idx = Math.floor(Math.random()*available.length);
             let pick = available[idx];
             available.splice(idx, 1);
             preds.push(pick.n);
-            const el = document.getElementById('p' + i);
-            el.innerText = pick.n;
-            el.style.background = pick.c;
-            el.style.color = (pick.c === '#bc13fe' || pick.c === '#ff4d4d') ? 'white' : 'black';
+            
+            const box = document.getElementById('p' + i);
+            box.innerHTML = pick.n.replace(" ", "<br>");
+            box.style.background = pick.c;
+            box.style.display = 'block';
+            box.style.color = (pick.c === '#39ff14' || pick.c === '#ffff00') ? 'black' : 'white';
         }
 
-        // 3. Save with Reason to Firebase (Cloud Recovery)
+        // 3. Cloud Save
         const user = firebase.auth().currentUser;
-        const logPath = 'game_logs/' + user.email.replace(/\./g, '_');
-        database.ref(logPath).push({
+        const path = 'game_logs/' + user.email.replace(/\./g, '_');
+        database.ref(path).push({
             input: userInput.map(u => u.name),
             predicted: preds,
             reason: reason,
             timestamp: new Date().toLocaleString()
         });
+        database.ref('global_stats/total_scans').transaction(c => (c || 0) + 1);
+    }
+
+    function fetchCloudData() {
+        const user = firebase.auth().currentUser;
+        const path = 'game_logs/' + user.email.replace(/\./g, '_');
+        database.ref(path).limitToLast(5).on('value', snap => {
+            const list = document.getElementById('logs-list');
+            list.innerHTML = "";
+            snap.forEach(child => {
+                const d = child.val();
+                list.innerHTML += `<div style="border-bottom:1px solid #222; padding:5px;">
+                    <span style="color:#39ff14;">${d.reason}</span> → ${d.predicted.join(", ")}
+                </div>`;
+            });
+        });
+        database.ref('global_stats/total_scans').on('value', s => {
+            document.getElementById('data-counter').innerText = s.val() || 0;
+        });
     }
 
     function login() {
-        const email = document.getElementById('email').value;
-        const pass = document.getElementById('password').value;
-        firebase.auth().signInWithEmailAndPassword(email, pass).then(() => showApp());
+        const e = document.getElementById('email').value;
+        const p = document.getElementById('password').value;
+        firebase.auth().signInWithEmailAndPassword(e, p).then(() => {
+            document.getElementById('login-screen').style.display='none';
+            document.getElementById('app-screen').style.display='block';
+            fetchCloudData();
+        });
     }
-
-    function showApp() {
-        document.getElementById('login-screen').style.display = 'none';
-        document.getElementById('app-screen').style.display = 'block';
-    }
-
-    firebase.auth().onAuthStateChanged(user => { if(user) showApp(); });
 </script>
 </body>
 </html>
