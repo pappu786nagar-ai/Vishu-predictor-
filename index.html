@@ -3,88 +3,122 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>VISHU AI v22.0 - SEQUENCE MATCH</title>
+    <title>VISHU AI v24.0 - ULTIMATE</title>
     <script src="https://www.gstatic.com/firebasejs/9.15.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.15.0/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.15.0/firebase-database-compat.js"></script>
     <style>
         :root { --primary: #6366f1; --secondary: #a855f7; --neon: #39ff14; --glass: rgba(255, 255, 255, 0.05); --border: rgba(255, 255, 255, 0.1); }
         * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; font-family: 'Inter', sans-serif; }
-        body { height: 100vh; margin: 0; background: radial-gradient(circle at top right, #1e1b4b, #0f172a); color: white; overflow: hidden; }
-        .container { display: flex; flex-direction: column; height: 100vh; max-width: 480px; margin: auto; padding: 15px; }
         
-        /* High-Visibility Match Display */
-        .match-status-box { 
-            background: rgba(0,0,0,0.5); border: 2px solid var(--border); 
-            padding: 15px; border-radius: 24px; margin-bottom: 12px; 
-            text-align: center; position: relative; overflow: hidden;
+        body { 
+            height: 100vh; margin: 0; background: #0f172a; 
+            background: radial-gradient(circle at top, #1e1b4b, #0f172a);
+            color: white; overflow: hidden; 
         }
-        .match-label { font-size: 10px; color: #94a3b8; letter-spacing: 2px; text-transform: uppercase; }
-        #match-rank { font-size: 24px; font-weight: 900; display: block; margin-top: 5px; transition: 0.3s; color: #475569; }
+
+        .container { display: flex; flex-direction: column; height: 100vh; max-width: 480px; margin: auto; padding: 12px; }
+
+        /* 1. ENGINE MONITOR PANEL */
+        .engine-monitor {
+            display: grid; grid-template-columns: repeat(2, 1fr); gap: 6px;
+            background: rgba(0,0,0,0.3); padding: 10px; border-radius: 15px; border: 1px solid var(--border); margin-bottom: 10px;
+        }
+        .status-item { font-size: 8px; display: flex; align-items: center; gap: 4px; color: #94a3b8; text-transform: uppercase; font-weight: bold; }
+        .dot-live { width: 5px; height: 5px; background: var(--neon); border-radius: 50%; box-shadow: 0 0 5px var(--neon); }
+
+        /* 2. MATCH DISPLAY PANEL */
+        .match-display { 
+            background: linear-gradient(to right, rgba(99,102,241,0.1), rgba(168,85,247,0.1));
+            border: 1px solid var(--border); padding: 15px; border-radius: 20px; text-align: center; margin-bottom: 10px;
+        }
+        #match-rank { font-size: 22px; font-weight: 900; display: block; color: #475569; letter-spacing: 1px; }
         .match-found { color: var(--neon) !important; text-shadow: 0 0 15px var(--neon); }
 
-        .planet-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; margin-bottom: 10px; }
-        .p-btn { padding: 14px; border-radius: 16px; border: 1px solid var(--border); background: rgba(255, 255, 255, 0.03); color: white; font-size: 12px; font-weight: 700; cursor: pointer; }
+        /* 3. INPUT AREA */
+        .game-card { background: var(--glass); backdrop-filter: blur(10px); border: 1px solid var(--border); border-radius: 24px; padding: 12px; }
+        .dot-row { display: flex; gap: 6px; margin-bottom: 12px; overflow-x: auto; scrollbar-width: none; padding-bottom: 5px; }
+        .dot-row::-webkit-scrollbar { display: none; }
+        .dot { min-width: 10px; height: 10px; border-radius: 50%; background: #334155; flex-shrink: 0; transition: 0.3s; }
+        
+        .planet-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px; }
+        .p-btn { 
+            padding: 14px 5px; border-radius: 14px; border: 1px solid var(--border); 
+            background: rgba(255, 255, 255, 0.03); color: white; font-size: 11px; font-weight: 700; 
+            cursor: pointer; text-align: center; transition: 0.2s;
+        }
         .p-btn:active { transform: scale(0.95); background: rgba(255,255,255,0.1); }
 
-        .pred-display { margin-top: auto; padding: 25px 15px; background: rgba(255,255,255,0.02); border-radius: 24px; border: 1px solid var(--border); text-align: center; }
-        .pred-row { display: flex; justify-content: space-around; gap: 8px; margin-top: 15px; }
-        .p-box { flex: 1; padding: 18px 5px; border-radius: 15px; font-size: 10px; font-weight: 800; display: none; color: white; border: 1px solid rgba(255,255,255,0.1); }
+        /* 4. RESULT AREA */
+        .result-panel { margin-top: 10px; padding: 15px; background: rgba(0,0,0,0.2); border-radius: 20px; border: 1px solid var(--border); text-align: center; }
+        .result-row { display: flex; justify-content: center; gap: 6px; margin-top: 10px; }
+        .p-box { flex: 1; padding: 15px 2px; border-radius: 12px; font-size: 9px; font-weight: 800; display: none; color: white; border: 1px solid rgba(255,255,255,0.1); text-transform: uppercase; }
 
-        .main-btn { width: 100%; padding: 20px; border-radius: 20px; margin-top: 15px; background: linear-gradient(135deg, var(--primary), var(--secondary)); color: white; border: none; font-weight: 800; font-size: 16px; cursor: pointer; box-shadow: 0 8px 20px rgba(99,102,241,0.3); }
+        .main-btn { 
+            width: 100%; padding: 18px; border-radius: 20px; margin-top: auto; 
+            background: linear-gradient(135deg, var(--primary), var(--secondary)); 
+            color: white; border: none; font-weight: 800; font-size: 15px; cursor: pointer;
+        }
         .main-btn:disabled { opacity: 0.3; filter: grayscale(1); }
-        
-        .dot-row { display: flex; justify-content: center; gap: 6px; margin-bottom: 15px; padding: 5px; overflow-x: auto; }
-        .dot { min-width: 10px; height: 10px; border-radius: 50%; background: #334155; transition: 0.4s; }
-        input { width: 100%; padding: 16px; margin-bottom: 12px; border-radius: 16px; background: rgba(255,255,255,0.05); border: 1px solid var(--border); color: white; outline: none; }
+
+        /* LOGIN */
+        #login-screen { position: absolute; inset: 0; z-index: 1000; background: #0f172a; display: flex; align-items: center; justify-content: center; padding: 20px; }
+        .login-card { width: 100%; max-width: 350px; background: var(--glass); padding: 30px; border-radius: 28px; border: 1px solid var(--border); text-align: center; }
+        input { width: 100%; padding: 16px; margin-bottom: 12px; border-radius: 14px; background: rgba(255,255,255,0.05); border: 1px solid var(--border); color: white; outline: none; }
     </style>
 </head>
 <body>
 
 <div class="container">
-    <div id="login-screen" style="justify-content: center; display: flex; flex-direction: column; height:100%;">
-        <div style="background: var(--glass); padding: 25px; border-radius: 24px; text-align: center; border: 1px solid var(--border);">
-            <h2 style="margin:0; font-size: 28px; background: linear-gradient(to right, #818cf8, #c084fc); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">VISHU AI v22.0</h2>
-            <p style="color: #94a3b8; font-size: 10px; margin-bottom: 30px;">SEQUENCE MATCHING ENGINE</p>
-            <input type="email" id="email" placeholder="User Email">
-            <input type="password" id="password" placeholder="Access Key">
-            <button class="main-btn" onclick="handleAuth()">LOGIN ENGINE</button>
+    <div id="login-screen">
+        <div class="login-card">
+            <h2 style="margin:0; background: linear-gradient(to right, #818cf8, #c084fc); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">VISHU AI</h2>
+            <p style="color: #94a3b8; font-size: 9px; letter-spacing: 2px; margin-bottom: 25px;">NEURAL NETWORK LOGIN</p>
+            <input type="email" id="email" placeholder="Access ID">
+            <input type="password" id="password" placeholder="Secure Key">
+            <button class="main-btn" onclick="handleAuth()">INITIALIZE SYSTEM</button>
         </div>
     </div>
 
-    <div id="app-screen" style="display: none;">
-        <div class="match-status-box">
-            <div class="match-label">Sequence Search Results</div>
-            <span id="match-rank">Awaiting Rounds</span>
+    <div id="app-screen" style="display: none; flex-direction: column; height: 100%;">
+        <div class="engine-monitor">
+            <div class="status-item"><div class="dot-live"></div> RECURSIVE: ON</div>
+            <div class="status-item"><div class="dot-live"></div> CLOUD SYNC: ON</div>
+            <div class="status-item"><div class="dot-live"></div> BAYESIAN: ON</div>
+            <div class="status-item"><div class="dot-live"></div> PATTERN: ON</div>
         </div>
 
-        <div style="background: var(--glass); padding: 15px; border-radius: 24px; border: 1px solid var(--border);">
-            <div class="dot-row" id="dot-display"></div>
+        <div class="match-display">
+            <span style="font-size: 9px; color: #94a3b8; letter-spacing: 1px;">MATCHING DEPTH (100-1)</span>
+            <span id="match-rank">SYSTEM READY</span>
+        </div>
 
+        <div class="game-card">
+            <div class="dot-row" id="dot-display"></div>
             <div class="planet-grid">
-                <button class="p-btn" onclick="addData('GREEN X5', '#39ff14')">GREEN X5</button>
-                <button class="p-btn" onclick="addData('PURPLE X5', '#bc13fe')">PURPLE X5</button>
-                <button class="p-btn" onclick="addData('YELLOW X5', '#ffff00')">YELLOW X5</button>
-                <button class="p-btn" onclick="addData('LIGHT GREEN X5', '#90ee90')">LT GREEN X5</button>
-                <button class="p-btn" onclick="addData('BIG X10', '#ff4d4d')">BIG X10</button>
-                <button class="p-btn" onclick="addData('BIG X15', '#ff8c00')">BIG X15</button>
-                <button class="p-btn" onclick="addData('BIG X25', '#00ffff')">BIG X25</button>
-                <button class="p-btn" onclick="addData('BIG X50', '#ff00ff')">BIG X50</button>
+                <button class="p-btn" style="border-left: 3px solid #39ff14" onclick="addData('GREEN X5', '#39ff14')">GREEN X5</button>
+                <button class="p-btn" style="border-left: 3px solid #bc13fe" onclick="addData('PURPLE X5', '#bc13fe')">PURPLE X5</button>
+                <button class="p-btn" style="border-left: 3px solid #ffff00" onclick="addData('YELLOW X5', '#ffff00')">YELLOW X5</button>
+                <button class="p-btn" style="border-left: 3px solid #90ee90" onclick="addData('LT GREEN X5', '#90ee90')">LT GREEN X5</button>
+                <button class="p-btn" style="border-left: 3px solid #ff4d4d" onclick="addData('BIG X10', '#ff4d4d')">BIG X10</button>
+                <button class="p-btn" style="border-left: 3px solid #ff8c00" onclick="addData('BIG X15', '#ff8c00')">BIG X15</button>
+                <button class="p-btn" style="border-left: 3px solid #00ffff" onclick="addData('BIG X25', '#00ffff')">BIG X25</button>
+                <button class="p-btn" style="border-left: 3px solid #ff00ff" onclick="addData('BIG X50', '#ff00ff')">BIG X50</button>
                 <button class="p-btn" style="background:#1e293b" onclick="undoLast()">UNDO</button>
                 <button class="p-btn" style="background:#1e293b" onclick="resetData()">PURGE</button>
             </div>
         </div>
 
-        <div class="pred-display">
-            <div id="wait-msg" style="font-size: 11px; color: #64748b; text-transform: uppercase;">Engine Idle</div>
-            <div class="pred-row">
+        <div class="result-panel">
+            <div id="wait-msg" style="font-size: 9px; color: #64748b;">AWAITING ROUND DATA</div>
+            <div class="result-row">
                 <div id="p1" class="p-box"></div>
                 <div id="p2" class="p-box"></div>
                 <div id="p3" class="p-box"></div>
             </div>
         </div>
 
-        <button class="main-btn" id="ai-btn" onclick="executeInfiniteScan()" disabled>START RECURSIVE MATCH</button>
+        <button class="main-btn" id="ai-btn" onclick="executeInfiniteScan()" disabled>EXECUTE RECURSIVE SCAN</button>
     </div>
 </div>
 
@@ -115,24 +149,23 @@
         db.ref('global_history').push(name);
         renderDots();
         document.getElementById('ai-btn').disabled = (userInput.length < 2);
-        document.getElementById('match-rank').innerText = "Rounds In: " + userInput.length;
+        document.getElementById('match-rank').innerText = "DATA CAPTURED";
         document.getElementById('match-rank').classList.remove('match-found');
     }
 
     function renderDots() {
         const container = document.getElementById('dot-display');
         container.innerHTML = "";
-        const colors = { 'GREEN X5': '#39ff14', 'PURPLE X5': '#bc13fe', 'YELLOW X5': '#ffff00', 'LIGHT GREEN X5': '#90ee90', 'BIG X10': '#ff4d4d', 'BIG X15': '#ff8c00', 'BIG X25': '#00ffff', 'BIG X50': '#ff00ff' };
-        userInput.slice(-15).forEach(name => {
+        const colors = { 'GREEN X5': '#39ff14', 'PURPLE X5': '#bc13fe', 'YELLOW X5': '#ffff00', 'LT GREEN X5': '#90ee90', 'BIG X10': '#ff4d4d', 'BIG X15': '#ff8c00', 'BIG X25': '#00ffff', 'BIG X50': '#ff00ff' };
+        userInput.slice(-30).forEach(name => {
             const d = document.createElement('div');
             d.className = 'dot';
             d.style.background = colors[name];
-            d.style.boxShadow = `0 0 8px ${colors[name]}`;
             container.appendChild(d);
         });
+        container.scrollLeft = container.scrollWidth;
     }
 
-    // --- RECURSIVE MATCH LOGIC ---
     async function executeInfiniteScan() {
         const rankEl = document.getElementById('match-rank');
         const btn = document.getElementById('ai-btn');
@@ -141,22 +174,14 @@
         let foundMatch = false;
         let nextPrediction = "";
         let bestSize = 0;
-
-        // Sequence starts from 100 or current total rounds, down to 1
         let maxDepth = Math.min(userInput.length, 100);
 
         for (let size = maxDepth; size >= 1; size--) {
-            // Live Update: dikhayega ki kaunsa sequence AI check kar raha hai
-            rankEl.innerText = `SCANNING: ${size} RDS`;
-            rankEl.style.color = "#818cf8";
-            
-            await new Promise(r => setTimeout(r, 20)); // Scanning feel
-
+            rankEl.innerText = `SCANNING ${size} RDS`;
+            await new Promise(r => setTimeout(r, 20));
             const currentPattern = userInput.slice(-size).join('|');
-
             for (let i = 0; i < cloudHistory.length - size; i++) {
-                const historyPattern = cloudHistory.slice(i, i + size).join('|');
-                if (currentPattern === historyPattern) {
+                if (currentPattern === cloudHistory.slice(i, i + size).join('|')) {
                     nextPrediction = cloudHistory[i + size];
                     bestSize = size;
                     foundMatch = true;
@@ -171,8 +196,7 @@
             rankEl.classList.add('match-found');
             showResults(nextPrediction);
         } else {
-            rankEl.innerText = "NO MATCH FOUND";
-            rankEl.style.color = "#ef4444";
+            rankEl.innerText = "NO CLOUD MATCH";
             showResults();
         }
         btn.disabled = false;
@@ -182,7 +206,7 @@
         const boxes = [document.getElementById('p1'), document.getElementById('p2'), document.getElementById('p3')];
         const allPlanets = [
             {n: "GREEN X5", c: "#22c55e"}, {n: "PURPLE X5", c: "#a855f7"}, 
-            {n: "YELLOW X5", c: "#eab308"}, {n: "LIGHT GREEN X5", c: "#4ade80"},
+            {n: "YELLOW X5", c: "#eab308"}, {n: "LT GREEN X5", c: "#4ade80"},
             {n: "BIG X10", c: "#ef4444"}, {n: "BIG X15", c: "#f97316"}, 
             {n: "BIG X25", c: "#06b6d4"}, {n: "BIG X50", c: "#ec4899"} 
         ];
@@ -199,11 +223,11 @@
             boxes[i].style.background = `linear-gradient(135deg, ${p.c}, #000)`;
             boxes[i].style.display = 'block';
         });
-        document.getElementById('wait-msg').innerText = "Prediction Decoded";
+        document.getElementById('wait-msg').innerText = "PREDICTION GENERATED";
     }
 
     function undoLast() { userInput.pop(); renderDots(); }
-    function resetData() { userInput = []; renderDots(); document.getElementById('ai-btn').disabled = true; document.getElementById('match-rank').innerText = "Awaiting Rounds"; }
+    function resetData() { userInput = []; renderDots(); document.getElementById('ai-btn').disabled = true; document.getElementById('match-rank').innerText = "SYSTEM PURGED"; }
 
     function handleAuth() {
         const email = document.getElementById('email').value;
