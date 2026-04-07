@@ -2,67 +2,235 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Vishu Recursive AI Scanner</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>VISHU AI v26.0 - PREMIUM ICONS</title>
+    <script src="https://www.gstatic.com/firebasejs/9.15.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.15.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.15.0/firebase-database-compat.js"></script>
     <style>
-        /* Aapka purana CSS yahan aayega */
-        body { background-color: #0b0e14; color: white; font-family: sans-serif; text-align: center; }
-        .btn-start { background: linear-gradient(to right, #4b0082, #8a2be2); color: white; padding: 15px 30px; border: none; border-radius: 25px; cursor: pointer; font-weight: bold; margin-top: 20px; }
-        #video-preview { width: 90%; max-width: 400px; border: 2px dashed #444; margin: 20px auto; display: block; }
+        :root { --primary: #6366f1; --secondary: #a855f7; --neon: #39ff14; --glass: rgba(255, 255, 255, 0.05); --border: rgba(255, 255, 255, 0.1); }
+        * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; font-family: 'Inter', sans-serif; }
+        body { height: 100vh; margin: 0; background: #0f172a; background: radial-gradient(circle at top, #1e1b4b, #0f172a); color: white; overflow: hidden; }
+        .container { display: flex; flex-direction: column; height: 100vh; max-width: 480px; margin: auto; padding: 10px; }
+
+        /* Stats & Match Display */
+        .stats-header { display: flex; justify-content: space-between; padding: 10px; background: rgba(0,0,0,0.4); border-radius: 15px; border: 1px solid var(--border); margin-bottom: 8px; }
+        .stat-value { font-size: 11px; font-weight: 800; color: var(--neon); }
+        .match-display { background: rgba(255,255,255,0.03); border: 1px solid var(--border); padding: 10px; border-radius: 18px; text-align: center; margin-bottom: 8px; }
+        #match-rank { font-size: 16px; font-weight: 900; color: #475569; text-transform: uppercase; }
+        .match-found { color: var(--neon) !important; text-shadow: 0 0 10px var(--neon); }
+
+        /* Game Card & Grid */
+        .game-card { background: var(--glass); backdrop-filter: blur(10px); border: 1px solid var(--border); border-radius: 20px; padding: 12px; }
+        .dot-row { display: flex; gap: 6px; margin-bottom: 12px; overflow-x: auto; scrollbar-width: none; min-height: 25px; align-items: center; }
+        .history-icon { width: 22px; height: 22px; border-radius: 50%; flex-shrink: 0; border: 1px solid rgba(255,255,255,0.1); }
+        
+        .planet-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; }
+        .p-btn { 
+            display: flex; flex-direction: column; align-items: center; justify-content: center;
+            padding: 8px 2px; border-radius: 12px; border: 1px solid var(--border); 
+            background: rgba(255,255,255,0.03); color: white; cursor: pointer; transition: 0.2s;
+        }
+        .p-btn:active { transform: scale(0.9); background: rgba(255,255,255,0.1); }
+        .p-btn img { width: 35px; height: 35px; margin-bottom: 4px; object-fit: contain; }
+        .p-btn span { font-size: 8px; font-weight: 700; opacity: 0.8; }
+
+        /* 3-POINT PREDICTION PANEL */
+        .prediction-panel { margin-top: 10px; padding: 15px; background: rgba(0,0,0,0.3); border-radius: 20px; border: 1px solid var(--border); }
+        .pred-row { display: grid; grid-template-columns: 1fr 1.5fr 1fr; gap: 10px; align-items: center; }
+        .p-box { 
+            aspect-ratio: 1; border-radius: 15px; display: flex; align-items: center; 
+            justify-content: center; border: 1px solid rgba(255,255,255,0.1); background: #1e293b;
+            transition: 0.3s;
+        }
+        .p-box img { width: 80%; height: 80%; object-fit: contain; }
+        .main-target { border: 2px solid var(--neon) !important; box-shadow: 0 0 20px rgba(57, 255, 20, 0.3); background: rgba(57, 255, 20, 0.1); }
+
+        .main-btn { width: 100%; padding: 16px; border-radius: 18px; margin-top: auto; background: linear-gradient(135deg, var(--primary), var(--secondary)); color: white; border: none; font-weight: 800; cursor: pointer; }
+        .main-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+
+        /* Login Screen */
+        #login-screen { position: absolute; inset: 0; z-index: 1000; background: #0f172a; display: flex; align-items: center; justify-content: center; padding: 20px; }
+        .login-card { width: 100%; max-width: 350px; background: var(--glass); padding: 30px; border-radius: 25px; border: 1px solid var(--border); text-align: center; }
+        input { width: 100%; padding: 14px; margin-bottom: 10px; border-radius: 12px; background: rgba(255,255,255,0.05); border: 1px solid var(--border); color: white; outline: none; }
     </style>
 </head>
 <body>
 
-    <h2>VISHU RECURSIVE AI</h2>
-    <div id="status">Status: Waiting for Scanner...</div>
+<div class="container">
+    <div id="login-screen">
+        <div class="login-card">
+            <h2 style="margin:0; color: var(--secondary);">VISHU AI</h2>
+            <p style="color: #94a3b8; font-size: 9px; margin-bottom: 25px;">3-POINT SEQUENCE ENGINE v26.0</p>
+            <input type="email" id="email" placeholder="User ID">
+            <input type="password" id="password" placeholder="Key">
+            <button class="main-btn" onclick="handleAuth()">LOGIN</button>
+        </div>
+    </div>
 
-    <video id="video-preview" autoplay playsinline muted></video>
+    <div id="app-screen" style="display: none; flex-direction: column; height: 100%;">
+        <div class="stats-header">
+            <div><span style="font-size: 8px; color:#94a3b8;">CLOUD DATA</span><br><span id="total-rounds-count" class="stat-value">0</span></div>
+            <div style="text-align: right;"><span style="font-size: 8px; color:#94a3b8;">STATUS</span><br><span class="stat-value">SYNCED</span></div>
+        </div>
 
-    <button id="startBtn" class="btn-start">ACTIVATE FULL AUTO-SCANNER</button>
+        <div class="match-display"><span id="match-rank">AWAITING ROUNDS</span></div>
 
-    <script>
-        const startBtn = document.getElementById('startBtn');
-        const videoElement = document.getElementById('video-preview');
-        const statusDiv = document.getElementById('status');
+        <div class="game-card">
+            <div class="dot-row" id="dot-display"></div>
+            <div class="planet-grid">
+                <button class="p-btn" onclick="addData('GREEN X5')"><img src="https://i.ibb.co/cKx9xBZY/1774884294833.png"><span>GREEN</span></button>
+                <button class="p-btn" onclick="addData('PURPLE X5')"><img src="https://i.ibb.co/rfK4VGxG/1774884032767.png"><span>PURPLE</span></button>
+                <button class="p-btn" onclick="addData('YELLOW X5')"><img src="https://i.ibb.co/FqgbLM2K/1774884727652.png"><span>YELLOW</span></button>
+                <button class="p-btn" onclick="addData('LT GREEN X5')"><img src="https://i.ibb.co/LdvVwr7Q/1774884409287.png"><span>L-GREEN</span></button>
+                <button class="p-btn" onclick="addData('BIG X10')"><img src="https://i.ibb.co/Xrdpc06K/1774884175541.png"><span>X10</span></button>
+                <button class="p-btn" onclick="addData('BIG X15')"><img src="https://i.ibb.co/j94K65js/1774884874332.png"><span>X15</span></button>
+                <button class="p-btn" onclick="addData('BIG X25')"><img src="https://i.ibb.co/zVLZ4ppL/1774884978904.png"><span>X25</span></button>
+                <button class="p-btn" onclick="addData('BIG X50')"><img src="https://i.ibb.co/rRfTTrKK/1774885160211.png"><span>X50</span></button>
+            </div>
+            <div style="display: flex; gap: 5px; margin-top: 10px;">
+                <button class="p-btn" style="flex:1; background:#1e293b" onclick="undoLast()">UNDO</button>
+                <button class="p-btn" style="flex:1; background:#1e293b" onclick="resetData()">PURGE</button>
+            </div>
+        </div>
 
-        async function startCapture() {
-            // Mobile par Audio capture support nahi hota, isliye ise false rakhna zaroori hai
-            const displayMediaOptions = {
-                video: {
-                    cursor: "always"
-                },
-                audio: false
-            };
+        <div class="prediction-panel">
+            <div class="pred-row">
+                <div id="p-prev" class="p-box"></div>
+                <div id="p-main" class="p-box main-target"></div>
+                <div id="p-next" class="p-box"></div>
+            </div>
+        </div>
 
-            try {
-                statusDiv.innerText = "Requesting Permission...";
-                
-                // Browser ka native popup trigger hoga
-                const captureStream = await navigator.mediaDevices.getDisplayMedia(displayMediaOptions);
-                
-                // Video stream ko preview window mein dikhayein
-                videoElement.srcObject = captureStream;
-                statusDiv.innerText = "LIVE SCANNING...";
-                statusDiv.style.color = "#00ff00";
+        <button class="main-btn" id="ai-btn" onclick="executeInfiniteScan()" disabled>EXECUTE 3-POINT SCAN</button>
+    </div>
+</div>
 
-                // Agar user screen sharing stop kar de toh
-                captureStream.getVideoTracks()[0].onended = () => {
-                    statusDiv.innerText = "Scanner Stopped";
-                    statusDiv.style.color = "red";
-                };
+<script>
+    const firebaseConfig = { 
+        apiKey: "AIzaSyCiKUh0v9GG3svQROdEF2FSg-Yf0y7D240",
+        authDomain: "vishu-sm-predictor-e760b.firebaseapp.com",
+        projectId: "vishu-sm-predictor-e760b",
+        databaseURL: "https://vishu-sm-predictor-e760b-default-rtdb.firebaseio.com/",
+        appId: "1:990041638587:web:1697860df62882ebe58b9e"
+    };
 
-            } catch (err) {
-                console.error("Error: " + err);
-                statusDiv.innerText = "Permission Denied! Try Desktop Mode.";
-                statusDiv.style.color = "red";
-                alert("Please enable 'Desktop Site' in Kiwi/Chrome and try again.");
+    firebase.initializeApp(firebaseConfig);
+    const auth = firebase.auth();
+    const db = firebase.database();
+    
+    let userInput = []; 
+    let cloudHistory = []; 
+
+    const iconMap = {
+        'GREEN X5': 'https://i.ibb.co/cKx9xBZY/1774884294833.png',
+        'PURPLE X5': 'https://i.ibb.co/rfK4VGxG/1774884032767.png',
+        'YELLOW X5': 'https://i.ibb.co/FqgbLM2K/1774884727652.png',
+        'LT GREEN X5': 'https://i.ibb.co/LdvVwr7Q/1774884409287.png',
+        'BIG X10': 'https://i.ibb.co/Xrdpc06K/1774884175541.png',
+        'BIG X15': 'https://i.ibb.co/j94K65js/1774884874332.png',
+        'BIG X25': 'https://i.ibb.co/zVLZ4ppL/1774884978904.png',
+        'BIG X50': 'https://i.ibb.co/rRfTTrKK/1774885160211.png'
+    };
+
+    function syncCloud() {
+        db.ref('global_history').on('value', (snap) => {
+            if(snap.exists()) {
+                const data = Object.values(snap.val());
+                document.getElementById('total-rounds-count').innerText = data.length + " RDS";
+                cloudHistory = data;
             }
+        });
+    }
+
+    function addData(name) {
+        userInput.push(name);
+        db.ref('global_history').push(name);
+        renderHistory();
+        document.getElementById('ai-btn').disabled = (userInput.length < 2);
+    }
+
+    function renderHistory() {
+        const container = document.getElementById('dot-display');
+        container.innerHTML = "";
+        userInput.slice(-20).forEach(name => {
+            const img = document.createElement('img');
+            img.className = 'history-icon';
+            img.src = iconMap[name];
+            container.appendChild(img);
+        });
+        container.scrollLeft = container.scrollWidth;
+    }
+
+    async function executeInfiniteScan() {
+        const rankEl = document.getElementById('match-rank');
+        const btn = document.getElementById('ai-btn');
+        btn.disabled = true;
+        rankEl.classList.remove('match-found');
+        
+        let matchIndex = -1;
+        let bestSize = 0;
+        let maxDepth = Math.min(userInput.length, 50);
+
+        for (let size = maxDepth; size >= 1; size--) {
+            rankEl.innerText = `SCANNING ${size} RDS...`;
+            await new Promise(r => setTimeout(r, 10));
+            
+            const currentPattern = userInput.slice(-size).join('|');
+            for (let i = 1; i < cloudHistory.length - (size + 2); i++) {
+                if (currentPattern === cloudHistory.slice(i, i + size).join('|')) {
+                    matchIndex = i;
+                    bestSize = size;
+                    break;
+                }
+            }
+            if (matchIndex !== -1) break;
         }
 
-        // Button click event - Yahan se hi permission trigger honi chahiye
-        startBtn.addEventListener('click', () => {
-            startCapture();
+        if (matchIndex !== -1) {
+            rankEl.innerText = `MATCH FOUND (${bestSize}R)`;
+            rankEl.classList.add('match-found');
+            display3Points(
+                cloudHistory[matchIndex - 1], 
+                cloudHistory[matchIndex + bestSize], 
+                cloudHistory[matchIndex + bestSize + 1]
+            );
+        } else {
+            rankEl.innerText = "NO SEQUENCE FOUND";
+            display3Points();
+        }
+        btn.disabled = false;
+    }
+
+    function display3Points(prev, main, next) {
+        const setBox = (id, name) => {
+            const el = document.getElementById(id);
+            el.innerHTML = name ? `<img src="${iconMap[name]}">` : "";
+            el.style.opacity = name ? "1" : "0.2";
+        };
+        setBox('p-prev', prev);
+        setBox('p-main', main);
+        setBox('p-next', next);
+    }
+
+    function undoLast() { userInput.pop(); renderHistory(); }
+    function resetData() { userInput = []; renderHistory(); document.getElementById('match-rank').innerText = "AWAITING ROUNDS"; display3Points(); }
+    
+    function handleAuth() {
+        const email = document.getElementById('email').value;
+        const pass = document.getElementById('password').value;
+        auth.signInWithEmailAndPassword(email, pass).catch(err => {
+            if(err.code === 'auth/user-not-found') auth.createUserWithEmailAndPassword(email, pass);
         });
-    </script>
+    }
+
+    auth.onAuthStateChanged(user => {
+        if (user) {
+            document.getElementById('login-screen').style.display = 'none';
+            document.getElementById('app-screen').style.display = 'flex';
+            syncCloud();
+        }
+    });
+</script>
 </body>
 </html>
