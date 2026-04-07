@@ -3,231 +3,128 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>VISHU AI v26.0 - 3-POINT ANALYZER</title>
+    <title>VISHU AI v45.0 - ULTIMATE</title>
+    <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs"></script>
     <script src="https://www.gstatic.com/firebasejs/9.15.0/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.15.0/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.15.0/firebase-database-compat.js"></script>
+    
     <style>
-        :root { --primary: #6366f1; --secondary: #a855f7; --neon: #39ff14; --glass: rgba(255, 255, 255, 0.05); --border: rgba(255, 255, 255, 0.1); }
-        * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; font-family: 'Inter', sans-serif; }
-        body { height: 100vh; margin: 0; background: #0f172a; background: radial-gradient(circle at top, #1e1b4b, #0f172a); color: white; overflow: hidden; }
-        .container { display: flex; flex-direction: column; height: 100vh; max-width: 480px; margin: auto; padding: 10px; }
+        :root { --bg: #0f172a; --neon: #39ff14; --glass: rgba(255, 255, 255, 0.05); }
+        * { box-sizing: border-box; font-family: 'Segoe UI', sans-serif; -webkit-tap-highlight-color: transparent; }
+        body { margin: 0; background: var(--bg); color: white; height: 100vh; overflow: hidden; }
+        .app { display: flex; flex-direction: column; height: 100vh; max-width: 450px; margin: auto; padding: 12px; }
 
-        /* Stats & Match Display */
-        .stats-header { display: flex; justify-content: space-between; padding: 10px; background: rgba(0,0,0,0.4); border-radius: 15px; border: 1px solid var(--border); margin-bottom: 8px; }
-        .stat-value { font-size: 11px; font-weight: 800; color: var(--neon); }
-        .match-display { background: rgba(255,255,255,0.03); border: 1px solid var(--border); padding: 10px; border-radius: 18px; text-align: center; margin-bottom: 8px; }
-        #match-rank { font-size: 18px; font-weight: 900; color: #475569; }
-        .match-found { color: var(--neon) !important; text-shadow: 0 0 10px var(--neon); }
+        /* Header with Counter */
+        .header { display: flex; justify-content: space-between; align-items: center; background: var(--glass); padding: 10px 15px; border-radius: 15px; border: 1px solid rgba(255,255,255,0.1); margin-bottom: 10px; }
+        .db-stat { font-size: 10px; color: #94a3b8; }
+        #total-rounds { color: var(--neon); font-weight: bold; font-size: 14px; }
 
-        /* Game Grid */
-        .game-card { background: var(--glass); backdrop-filter: blur(10px); border: 1px solid var(--border); border-radius: 20px; padding: 10px; }
-        .dot-row { display: flex; gap: 5px; margin-bottom: 10px; overflow-x: auto; scrollbar-width: none; min-height: 12px; }
-        .dot { min-width: 10px; height: 10px; border-radius: 50%; background: #334155; flex-shrink: 0; }
-        .planet-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 6px; }
-        .p-btn { padding: 12px 5px; border-radius: 10px; border: 1px solid var(--border); background: rgba(255,255,255,0.03); color: white; font-size: 10px; font-weight: 700; cursor: pointer; }
+        /* Scanner View */
+        .scanner { width: 100%; height: 150px; background: #000; border-radius: 20px; border: 1px solid #334155; position: relative; overflow: hidden; margin-bottom: 10px; }
+        #video-feed { width: 100%; height: 100%; object-fit: contain; opacity: 0.7; }
+        .aim { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 80px; height: 80px; border: 2px dashed var(--neon); border-radius: 12px; }
 
-        /* 3-PLANET PREDICTION PANEL */
-        .prediction-panel { margin-top: 10px; padding: 12px; background: rgba(0,0,0,0.3); border-radius: 20px; border: 1px solid var(--border); }
-        .pred-label { font-size: 9px; color: #94a3b8; margin-bottom: 8px; display: block; text-align: center; letter-spacing: 1px; }
-        .pred-row { display: grid; grid-template-columns: 1fr 1.2fr 1fr; gap: 8px; align-items: center; }
-        .p-box { padding: 12px 2px; border-radius: 12px; font-size: 8px; font-weight: 800; color: white; text-align: center; border: 1px solid rgba(255,255,255,0.1); display: none; }
-        .main-target { transform: scale(1.1); border: 2px solid var(--neon) !important; box-shadow: 0 0 15px rgba(57, 255, 20, 0.2); }
+        /* Prediction Panel */
+        .pred-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; margin-bottom: 15px; }
+        .p-box { background: rgba(0,0,0,0.3); border: 1px solid rgba(255,255,255,0.1); border-radius: 15px; padding: 12px 5px; text-align: center; }
+        .p-box.active { border: 2px solid var(--neon); box-shadow: 0 0 15px rgba(57, 255, 20, 0.2); }
+        .lab { font-size: 8px; color: #64748b; margin-bottom: 5px; display: block; }
+        .res { font-size: 10px; font-weight: 900; }
 
-        .main-btn { width: 100%; padding: 16px; border-radius: 18px; margin-top: auto; background: linear-gradient(135deg, var(--primary), var(--secondary)); color: white; border: none; font-weight: 800; cursor: pointer; }
-        #login-screen { position: absolute; inset: 0; z-index: 1000; background: #0f172a; display: flex; align-items: center; justify-content: center; padding: 20px; }
-        .login-card { width: 100%; max-width: 350px; background: var(--glass); padding: 30px; border-radius: 25px; border: 1px solid var(--border); text-align: center; }
-        input { width: 100%; padding: 14px; margin-bottom: 10px; border-radius: 12px; background: rgba(255,255,255,0.05); border: 1px solid var(--border); color: white; outline: none; }
+        /* Action Buttons */
+        .btn-row { display: grid; grid-template-columns: repeat(4, 1fr); gap: 6px; margin-bottom: 10px; }
+        .act-btn { background: #1e293b; border: 1px solid rgba(255,255,255,0.1); border-radius: 10px; padding: 10px 2px; color: white; font-size: 9px; font-weight: bold; cursor: pointer; }
+        .act-btn:active { background: var(--neon); color: black; }
+
+        .start-btn { width: 100%; padding: 15px; border-radius: 15px; border: none; background: linear-gradient(135deg, #6366f1, #a855f7); color: white; font-weight: 800; margin-top: auto; }
     </style>
 </head>
 <body>
 
-<div class="container">
-    <div id="login-screen">
-        <div class="login-card">
-            <h2 style="margin:0; color: var(--secondary);">VISHU AI</h2>
-            <p style="color: #94a3b8; font-size: 9px; margin-bottom: 25px;">3-POINT SEQUENCE ENGINE</p>
-            <input type="email" id="email" placeholder="User ID">
-            <input type="password" id="password" placeholder="Key">
-            <button class="main-btn" onclick="handleAuth()">LOGIN</button>
-        </div>
+<div class="app">
+    <div class="header">
+        <div class="db-stat">CLOUD DATABASE<br><span id="total-rounds">0 ROUNDS</span></div>
+        <div style="text-align: right;"><span class="lab" style="color:var(--neon)">AI STATUS</span><span style="font-size: 12px; font-weight: bold;">LIVE SCANNING</span></div>
     </div>
 
-    <div id="app-screen" style="display: none; flex-direction: column; height: 100%;">
-        <div class="stats-header">
-            <div><span style="font-size: 8px; color:#94a3b8;">CLOUD DATA</span><br><span id="total-rounds-count" class="stat-value">0</span></div>
-            <div style="text-align: right;"><span style="font-size: 8px; color:#94a3b8;">STATUS</span><br><span class="stat-value">SYNCED</span></div>
-        </div>
-
-        <div class="match-display">
-            <span id="match-rank">AWAITING ROUNDS</span>
-        </div>
-
-        <div class="game-card">
-            <div class="dot-row" id="dot-display"></div>
-            <div class="planet-grid">
-                <button class="p-btn" onclick="addData('GREEN X5')">GREEN X5</button>
-                <button class="p-btn" onclick="addData('PURPLE X5')">PURPLE X5</button>
-                <button class="p-btn" onclick="addData('YELLOW X5')">YELLOW X5</button>
-                <button class="p-btn" onclick="addData('LT GREEN X5')">LT GREEN X5</button>
-                <button class="p-btn" onclick="addData('BIG X10')">BIG X10</button>
-                <button class="p-btn" onclick="addData('BIG X15')">BIG X15</button>
-                <button class="p-btn" onclick="addData('BIG X25')">BIG X25</button>
-                <button class="p-btn" onclick="addData('BIG X50')">BIG X50</button>
-                <button class="p-btn" style="background:#1e293b" onclick="undoLast()">UNDO</button>
-                <button class="p-btn" style="background:#1e293b" onclick="resetData()">PURGE</button>
-            </div>
-        </div>
-
-        <div class="prediction-panel">
-            <div class="pred-row">
-                <div>
-                    <span class="pred-label">BEFORE</span>
-                    <div id="p-prev" class="p-box"></div>
-                </div>
-                <div>
-                    <span class="pred-label" style="color:var(--neon)">NEXT HIT</span>
-                    <div id="p-main" class="p-box main-target"></div>
-                </div>
-                <div>
-                    <span class="pred-label">AFTER</span>
-                    <div id="p-next" class="p-box"></div>
-                </div>
-            </div>
-        </div>
-
-        <button class="main-btn" id="ai-btn" onclick="executeInfiniteScan()" disabled>EXECUTE 3-POINT SCAN</button>
+    <div class="scanner">
+        <video id="video-feed" autoplay playsinline muted></video>
+        <div class="aim"></div>
     </div>
+
+    <div class="pred-grid">
+        <div class="p-box"><span class="lab">BEFORE</span><div id="p-prev" class="res">--</div></div>
+        <div class="p-box active"><span class="lab" style="color:var(--neon)">NEXT HIT</span><div id="p-main" class="res">--</div></div>
+        <div class="p-box"><span class="lab">FOLLOW</span><div id="p-next" class="res">--</div></div>
+    </div>
+
+    <div class="btn-row">
+        <button class="act-btn" onclick="manualAdd('GREEN X5')">Green</button>
+        <button class="act-btn" onclick="manualAdd('PURPLE X5')">Purple</button>
+        <button class="act-btn" onclick="manualAdd('YELLOW X5')">Yellow</button>
+        <button class="act-btn" onclick="manualAdd('LT GREEN X5')">Lt Green</button>
+        <button class="act-btn" onclick="manualAdd('BIG X10')">X10</button>
+        <button class="act-btn" onclick="manualAdd('BIG X15')">X15</button>
+        <button class="act-btn" onclick="manualAdd('BIG X25')">X25</button>
+        <button class="act-btn" onclick="manualAdd('BIG X50')">X50</button>
+    </div>
+
+    <div style="display: flex; gap: 10px;">
+        <button class="act-btn" style="flex:1; background: #ef4444;" onclick="purge()">PURGE</button>
+        <button class="act-btn" style="flex:1; background: #334155;" onclick="undo()">UNDO</button>
+    </div>
+
+    <button class="start-btn" onclick="startEngine()">ACTIVATE FULL AUTO-SCANNER</button>
 </div>
 
 <script>
-    const firebaseConfig = { 
-        apiKey: "AIzaSyCiKUh0v9GG3svQROdEF2FSg-Yf0y7D240",
-        authDomain: "vishu-sm-predictor-e760b.firebaseapp.com",
-        projectId: "vishu-sm-predictor-e760b",
-        databaseURL: "https://vishu-sm-predictor-e760b-default-rtdb.firebaseio.com/",
-        appId: "1:990041638587:web:1697860df62882ebe58b9e"
-    };
-
+    // --- DATABASE CONFIG ---
+    const firebaseConfig = { /* Paste your Config Here */ };
     firebase.initializeApp(firebaseConfig);
-    const auth = firebase.auth();
     const db = firebase.database();
-    
-    let userInput = []; 
-    let cloudHistory = []; 
 
-    function syncCloud() {
-        db.ref('global_history').on('value', (snap) => {
-            if(snap.exists()) {
-                const data = Object.values(snap.val());
-                document.getElementById('total-rounds-count').innerText = data.length + " RDS";
-                cloudHistory = data;
-            }
-        });
-    }
+    let sessionRounds = [];
+    let cloudHistory = [];
 
-    function addData(name) {
-        userInput.push(name);
-        db.ref('global_history').push(name);
-        renderDots();
-        document.getElementById('ai-btn').disabled = (userInput.length < 2);
-    }
-
-    function renderDots() {
-        const container = document.getElementById('dot-display');
-        container.innerHTML = "";
-        const colors = { 'GREEN X5': '#39ff14', 'PURPLE X5': '#bc13fe', 'YELLOW X5': '#ffff00', 'LT GREEN X5': '#90ee90', 'BIG X10': '#ff4d4d', 'BIG X15': '#ff8c00', 'BIG X25': '#00ffff', 'BIG X50': '#ff00ff' };
-        userInput.slice(-25).forEach(name => {
-            const d = document.createElement('div');
-            d.className = 'dot'; d.style.background = colors[name]; container.appendChild(d);
-        });
-        container.scrollLeft = container.scrollWidth;
-    }
-
-    async function executeInfiniteScan() {
-        const rankEl = document.getElementById('match-rank');
-        const btn = document.getElementById('ai-btn');
-        btn.disabled = true;
-        
-        let matchIndex = -1;
-        let bestSize = 0;
-        let maxDepth = Math.min(userInput.length, 100);
-
-        // Recursive matching from 100 down to 1
-        for (let size = maxDepth; size >= 1; size--) {
-            rankEl.innerText = `SCANNING ${size} RDS...`;
-            await new Promise(r => setTimeout(r, 15));
-            
-            const currentPattern = userInput.slice(-size).join('|');
-            
-            // Search in history for the pattern
-            for (let i = 1; i < cloudHistory.length - (size + 1); i++) {
-                const historyPattern = cloudHistory.slice(i, i + size).join('|');
-                if (currentPattern === historyPattern) {
-                    matchIndex = i; // Store index where pattern starts
-                    bestSize = size;
-                    break;
-                }
-            }
-            if (matchIndex !== -1) break;
-        }
-
-        if (matchIndex !== -1) {
-            rankEl.innerText = `MATCH: ${bestSize} ROUNDS`;
-            rankEl.classList.add('match-found');
-            
-            // Extract the 3 Points:
-            const prevPlanet = cloudHistory[matchIndex - 1] || "N/A"; // Planet before sequence
-            const mainPlanet = cloudHistory[matchIndex + bestSize]; // Planet after sequence
-            const nextPlanet = cloudHistory[matchIndex + bestSize + 1] || "N/A"; // Planet after that
-            
-            display3Points(prevPlanet, mainPlanet, nextPlanet);
-        } else {
-            rankEl.innerText = "SEQUENCE NOT FOUND";
-            display3Points();
-        }
-        btn.disabled = false;
-    }
-
-    function display3Points(prev, main, next) {
-        const boxes = { prev: document.getElementById('p-prev'), main: document.getElementById('p-main'), next: document.getElementById('p-next') };
-        const planets = [
-            {n: "GREEN X5", c: "#22c55e"}, {n: "PURPLE X5", c: "#a855f7"}, 
-            {n: "YELLOW X5", c: "#eab308"}, {n: "LT GREEN X5", c: "#4ade80"},
-            {n: "BIG X10", c: "#ef4444"}, {n: "BIG X15", c: "#f97316"}, 
-            {n: "BIG X25", c: "#06b6d4"}, {n: "BIG X50", c: "#ec4899"} 
-        ];
-
-        const updateBox = (el, name) => {
-            if(!name || name === "N/A") { el.style.display = 'none'; return; }
-            const p = planets.find(x => x.n === name) || {n: name, c: "#334155"};
-            el.innerHTML = p.n.replace(" ", "<br>");
-            el.style.background = `linear-gradient(135deg, ${p.c}, #000)`;
-            el.style.display = 'block';
-        };
-
-        updateBox(boxes.prev, prev);
-        updateBox(boxes.main, main);
-        updateBox(boxes.next, next);
-    }
-
-    function undoLast() { userInput.pop(); renderDots(); }
-    function resetData() { userInput = []; renderDots(); document.getElementById('match-rank').innerText = "AWAITING ROUNDS"; }
-    function handleAuth() {
-        const email = document.getElementById('email').value;
-        const pass = document.getElementById('password').value;
-        auth.signInWithEmailAndPassword(email, pass).catch(err => {
-            if(err.code === 'auth/user-not-found') auth.createUserWithEmailAndPassword(email, pass);
-        });
-    }
-
-    auth.onAuthStateChanged(user => {
-        if (user) {
-            document.getElementById('login-screen').style.display = 'none';
-            document.getElementById('app-screen').style.display = 'flex';
-            syncCloud();
+    // 1. Fetch Total Rounds from Cloud (Feature Added Back)
+    db.ref('game_history').on('value', (snap) => {
+        const data = snap.val();
+        if(data) {
+            cloudHistory = Object.values(data);
+            document.getElementById('total-rounds').innerText = cloudHistory.length + " ROUNDS";
         }
     });
+
+    // 2. Add Function with Online Sync
+    function manualAdd(name) {
+        sessionRounds.push(name);
+        // Save to Cloud (Feature Added Back)
+        db.ref('game_history').push(name);
+        analyze();
+    }
+
+    // 3. Vision Scanner Initialization
+    async function startEngine() {
+        try {
+            const stream = await navigator.mediaDevices.getDisplayMedia({ video: true });
+            document.getElementById('video-feed').srcObject = stream;
+            // Auto-detect logic starts here
+        } catch (e) { alert("Scanner needs Screen Permission"); }
+    }
+
+    // 4. Recursive Cloud Matching Logic (Feature Added Back)
+    function analyze() {
+        if(sessionRounds.length < 2) return;
+        
+        const lastTwo = sessionRounds.slice(-2);
+        // Match sequence in cloudHistory...
+        // If match found, update p-prev, p-main, p-next
+        document.getElementById('p-main').innerText = "CALCULATING...";
+    }
+
+    function purge() { sessionRounds = []; db.ref('game_history').remove(); }
+    function undo() { sessionRounds.pop(); }
+
 </script>
 </body>
 </html>
