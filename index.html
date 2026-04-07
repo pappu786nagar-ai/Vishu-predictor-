@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>VISHU AI v26.0 - PREMIUM ICONS</title>
+    <title>VISHU AI v26.0 - STABLE ICONS</title>
     <script src="https://www.gstatic.com/firebasejs/9.15.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.15.0/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.15.0/firebase-database-compat.js"></script>
@@ -13,17 +13,15 @@
         body { height: 100vh; margin: 0; background: #0f172a; background: radial-gradient(circle at top, #1e1b4b, #0f172a); color: white; overflow: hidden; }
         .container { display: flex; flex-direction: column; height: 100vh; max-width: 480px; margin: auto; padding: 10px; }
 
-        /* Stats & Match Display */
         .stats-header { display: flex; justify-content: space-between; padding: 10px; background: rgba(0,0,0,0.4); border-radius: 15px; border: 1px solid var(--border); margin-bottom: 8px; }
         .stat-value { font-size: 11px; font-weight: 800; color: var(--neon); }
         .match-display { background: rgba(255,255,255,0.03); border: 1px solid var(--border); padding: 10px; border-radius: 18px; text-align: center; margin-bottom: 8px; }
         #match-rank { font-size: 16px; font-weight: 900; color: #475569; text-transform: uppercase; }
         .match-found { color: var(--neon) !important; text-shadow: 0 0 10px var(--neon); }
 
-        /* Game Card & Grid */
         .game-card { background: var(--glass); backdrop-filter: blur(10px); border: 1px solid var(--border); border-radius: 20px; padding: 12px; }
         .dot-row { display: flex; gap: 6px; margin-bottom: 12px; overflow-x: auto; scrollbar-width: none; min-height: 25px; align-items: center; }
-        .history-icon { width: 22px; height: 22px; border-radius: 50%; flex-shrink: 0; border: 1px solid rgba(255,255,255,0.1); }
+        .history-icon { width: 22px; height: 22px; border-radius: 50%; flex-shrink: 0; border: 1px solid rgba(255,255,255,0.1); object-fit: contain; }
         
         .planet-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; }
         .p-btn { 
@@ -31,25 +29,20 @@
             padding: 8px 2px; border-radius: 12px; border: 1px solid var(--border); 
             background: rgba(255,255,255,0.03); color: white; cursor: pointer; transition: 0.2s;
         }
-        .p-btn:active { transform: scale(0.9); background: rgba(255,255,255,0.1); }
         .p-btn img { width: 35px; height: 35px; margin-bottom: 4px; object-fit: contain; }
         .p-btn span { font-size: 8px; font-weight: 700; opacity: 0.8; }
 
-        /* 3-POINT PREDICTION PANEL */
         .prediction-panel { margin-top: 10px; padding: 15px; background: rgba(0,0,0,0.3); border-radius: 20px; border: 1px solid var(--border); }
         .pred-row { display: grid; grid-template-columns: 1fr 1.5fr 1fr; gap: 10px; align-items: center; }
         .p-box { 
             aspect-ratio: 1; border-radius: 15px; display: flex; align-items: center; 
             justify-content: center; border: 1px solid rgba(255,255,255,0.1); background: #1e293b;
-            transition: 0.3s;
+            overflow: hidden; font-size: 9px; text-align: center; color: #94a3b8; font-weight: bold;
         }
-        .p-box img { width: 80%; height: 80%; object-fit: contain; }
+        .p-box img { max-width: 90%; max-height: 90%; object-fit: contain; }
         .main-target { border: 2px solid var(--neon) !important; box-shadow: 0 0 20px rgba(57, 255, 20, 0.3); background: rgba(57, 255, 20, 0.1); }
 
         .main-btn { width: 100%; padding: 16px; border-radius: 18px; margin-top: auto; background: linear-gradient(135deg, var(--primary), var(--secondary)); color: white; border: none; font-weight: 800; cursor: pointer; }
-        .main-btn:disabled { opacity: 0.5; cursor: not-allowed; }
-
-        /* Login Screen */
         #login-screen { position: absolute; inset: 0; z-index: 1000; background: #0f172a; display: flex; align-items: center; justify-content: center; padding: 20px; }
         .login-card { width: 100%; max-width: 350px; background: var(--glass); padding: 30px; border-radius: 25px; border: 1px solid var(--border); text-align: center; }
         input { width: 100%; padding: 14px; margin-bottom: 10px; border-radius: 12px; background: rgba(255,255,255,0.05); border: 1px solid var(--border); color: white; outline: none; }
@@ -61,7 +54,7 @@
     <div id="login-screen">
         <div class="login-card">
             <h2 style="margin:0; color: var(--secondary);">VISHU AI</h2>
-            <p style="color: #94a3b8; font-size: 9px; margin-bottom: 25px;">3-POINT SEQUENCE ENGINE v26.0</p>
+            <p style="color: #94a3b8; font-size: 9px; margin-bottom: 25px;">STABLE PREDICTION v26.0</p>
             <input type="email" id="email" placeholder="User ID">
             <input type="password" id="password" placeholder="Key">
             <button class="main-btn" onclick="handleAuth()">LOGIN</button>
@@ -102,7 +95,7 @@
             </div>
         </div>
 
-        <button class="main-btn" id="ai-btn" onclick="executeInfiniteScan()" disabled>EXECUTE 3-POINT SCAN</button>
+        <button class="main-btn" id="ai-btn" onclick="executeInfiniteScan()" disabled>EXECUTE SCAN</button>
     </div>
 </div>
 
@@ -133,6 +126,14 @@
         'BIG X50': 'https://i.ibb.co/rRfTTrKK/1774885160211.png'
     };
 
+    // Preload Images to memory
+    function preloadAll() {
+        Object.values(iconMap).forEach(url => {
+            const img = new Image();
+            img.src = url;
+        });
+    }
+
     function syncCloud() {
         db.ref('global_history').on('value', (snap) => {
             if(snap.exists()) {
@@ -157,6 +158,7 @@
             const img = document.createElement('img');
             img.className = 'history-icon';
             img.src = iconMap[name];
+            img.onerror = function() { this.style.background = "#555"; };
             container.appendChild(img);
         });
         container.scrollLeft = container.scrollWidth;
@@ -205,8 +207,13 @@
     function display3Points(prev, main, next) {
         const setBox = (id, name) => {
             const el = document.getElementById(id);
-            el.innerHTML = name ? `<img src="${iconMap[name]}">` : "";
-            el.style.opacity = name ? "1" : "0.2";
+            if(name && iconMap[name]) {
+                el.innerHTML = `<img src="${iconMap[name]}" onerror="this.parentElement.innerText='${name}'">`;
+                el.style.opacity = "1";
+            } else {
+                el.innerHTML = "";
+                el.style.opacity = "0.2";
+            }
         };
         setBox('p-prev', prev);
         setBox('p-main', main);
@@ -228,6 +235,7 @@
         if (user) {
             document.getElementById('login-screen').style.display = 'none';
             document.getElementById('app-screen').style.display = 'flex';
+            preloadAll();
             syncCloud();
         }
     });
